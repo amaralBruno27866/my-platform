@@ -1,0 +1,9 @@
+{
+  "name": "@my-platform/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'API ainda não inicializada. Próximo passo: configurar Express + TypeScript em apps/api'",
+    "build": "echo 'Build não configurado ainda'"
+  }
+}

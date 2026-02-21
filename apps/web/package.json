@@ -1,0 +1,9 @@
+{
+  "name": "@my-platform/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "echo 'Frontend ainda não inicializado. Próximo passo: criar projeto Angular em apps/web'",
+    "build": "echo 'Build não configurado ainda'"
+  }
+}
