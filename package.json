@@ -11,6 +11,8 @@
     "down:infra": "docker compose down",
     "logs:infra": "docker compose logs -f mongo redis",
     "health:infra": "docker compose ps",
-    "prepare:all": "npm install --workspaces --if-present"
+    "prepare:all": "npm install --workspaces --if-present",
+    "dev:api": "npm run dev -w apps/api",
+    "dev:web": "npm run start -w apps/web"
   }
 }
