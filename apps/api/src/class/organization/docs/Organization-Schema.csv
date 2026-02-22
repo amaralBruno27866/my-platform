@@ -1,14 +1,15 @@
 Field name,Type,Required ?,Nullabel ?,Default value,Index type,Enum,Validation rule,Normalization,Unique ?,Reference to,Referenced schema,Calculated ?,Example value,Sensitive ?,Hashed ?,Indexed ?,Query usage,Immutable
-Organization-id,Object ID,TRUE,Not NULL,,Single field,,Strict,1NF,TRUE,,,TRUE,acronym + int,FALSE,FALSE,TRUE,Search,TRUE
+Organization-id,Object ID,TRUE,Not NULL,,Single field,,Strict,1NF,TRUE,,,TRUE,,FALSE,FALSE,TRUE,Search,TRUE
+Organization-public-id,String,TRUE,Not NULL,,Text,,Strict,1NF,TRUE,,,,Acronym + 000001,FALSE,FALSE,TRUE,Search,TRUE
 Organization-name,String,TRUE,Not NULL,,Text,,Strict,1NF,TRUE,,,,,FALSE,FALSE,TRUE,None,
 Legal-name,String,TRUE,Not NULL,,Text,,Strict,1NF,TRUE,,,,,FALSE,FALSE,FALSE,Search,
 Acronym,String,TRUE,Not NULL,,Text,,Moderate,1NF,FALSE,,,,ABC,FALSE,FALSE,FALSE,None,
 Slug,String,TRUE,Not NULL,,Text,,Strict,1NF,TRUE,,,TRUE,,FALSE,FALSE,TRUE,Filter,TRUE
 Organization-logo,URL,TRUE,Not NULL,,Single field,,Strict,1NF,FALSE,,,,http://my-company-logo,FALSE,FALSE,FALSE,None,
 Organization-website,URL,TRUE,Not NULL,,Single field,,Moderate,1NF,FALSE,,,,http://my-company-site,FALSE,FALSE,FALSE,None,
-Representative,Object ID,TRUE,Not NULL,,Text,,Moderate,3NF,FALSE,Lookup,account,,,TRUE,FALSE,FALSE,None,
-Organization-email,String,FALSE,Optional,,Text,,Moderate,1NF,TRUE,,,,mycompany@email.com,TRUE,FALSE,TRUE,Filter,
-Organization-address,Object ID,TRUE,Not NULL,,Text,,Strict,3NF,TRUE,Lookup,address,,,FALSE,FALSE,FALSE,None,
+Representative,Object ID,TRUE,Not NULL,,Single field,,Moderate,3NF,FALSE,Lookup,account,,,TRUE,FALSE,FALSE,None,
+Organization-email,String,FALSE,Optional,,Single field,,Moderate,1NF,TRUE,,,,mycompany@email.com,TRUE,FALSE,TRUE,Filter,
+Organization-address,Object ID,TRUE,Not NULL,,Single field,,Strict,3NF,TRUE,Lookup,address,,,FALSE,FALSE,FALSE,None,
 Organization-phone,String,FALSE,Optional,,Text,,Moderate,1NF,TRUE,,,,(xxx) xxx-xxxx,TRUE,FALSE,FALSE,None,
 Organization-status,Int32,TRUE,Not NULL,1,Single field,status.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,TRUE,Filter,
 Privilege,Int32,TRUE,Not NULL,4,Single field,privilege.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,None,
@@ -22,7 +23,7 @@ Owner/Module,organization,,,,,,,,,,,,,,,,,
 Primary use case,CRUD,,,,,,,,,,,,,,,,,
 Relationship summary,The organization entity is the primary entity within the system; all other entities connect to it directly or indirectly.,,,,,,,,,,,,,,,,,
 Cardinality summary,1:N,,,,,,,,,,,,,,,,,
-Indexes,"_id_ (Primary), slug_1 (Unique), organization-name_text",,,,,,,,,,,,,,,,,
+Indexes,"_id (Primary), organization-public-id_1 (Unique), slug_1 (Unique), organization-email_1 (Unique, sparse), organization-name_text (Text search)",,,,,,,,,,,,,,,,,
 Audit enable,Enabled,,,,,,,,,,,,,,,,,
 API level,Internal,,,,,,,,,,,,,,,,,
 PII level,Medium,,,,,,,,,,,,,,,,,
