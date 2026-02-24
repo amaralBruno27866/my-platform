@@ -5,6 +5,7 @@
  * - Enums
  * - Constants
  * - Interfaces
+ * - Schemas
  * - Validators
  * - Mappers
  * - Repositories
@@ -32,14 +33,14 @@ export * from "./enums";
 export * from "./constants";
 
 // ========================================
-// SCHEMAS
-// ========================================
-// export * from "./schemas";
-
-// ========================================
 // INTERFACES
 // ========================================
 // export * from "./interfaces";
+
+// ========================================
+// SCHEMAS
+// ========================================
+// export * from "./schemas";
 
 // ========================================
 // VALIDATORS
