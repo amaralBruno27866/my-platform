@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { AccessModifier } from "../../../common/enums/access-modifier.enum";
 import { Privilege } from "../../../common/enums/privilege.enum";
 import { OrganizationSttus } from "../enums";
@@ -12,7 +13,7 @@ import { OrganizationSttus } from "../enums";
  * - Enums are strongly typed to avoid invalid status/privilege/access values.
  */
 export interface IOrganization {
-  organizationId: string;
+  organizationId: Types.ObjectId | string;
   organizationPublicId: string;
   organizationName: string;
   legalName: string;
@@ -21,9 +22,9 @@ export interface IOrganization {
   organizationLogo: string;
   organizationWebsite: string;
   representativeName: string;
-  representativeAccountId?: string;
+  representativeAccountId?: Types.ObjectId | string;
   organizationEmail?: string;
-  organizationAddress?: string;
+  organizationAddress?: Types.ObjectId | string;
   organizationPhone?: string;
   organizationStatus: OrganizationSttus;
   privilege: Privilege;
@@ -31,6 +32,6 @@ export interface IOrganization {
   createdAt: Date;
   updatedAt?: Date | null;
   deletedAt?: Date | null;
-  createdBy: string;
-  updatedBy?: string | null;
+  createdBy: Types.ObjectId | string;
+  updatedBy?: Types.ObjectId | string | null;
 }
