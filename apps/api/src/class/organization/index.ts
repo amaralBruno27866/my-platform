@@ -35,7 +35,7 @@ export * from "./constants";
 // ========================================
 // INTERFACES
 // ========================================
-// export * from "./interfaces";
+export * from "./interfaces";
 
 // ========================================
 // SCHEMAS
