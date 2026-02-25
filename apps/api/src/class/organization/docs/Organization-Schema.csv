@@ -8,7 +8,7 @@ Slug,String,TRUE,Not NULL,,Text,,Strict,1NF,TRUE,,,TRUE,,FALSE,FALSE,TRUE,Filter
 Organization-logo,URL,TRUE,Not NULL,,Single field,,Strict,1NF,FALSE,,,,http://my-company-logo,FALSE,FALSE,FALSE,None,FALSE,Only by privilege 4
 Organization-website,URL,TRUE,Not NULL,,Single field,,Moderate,1NF,FALSE,,,,http://my-company-site,FALSE,FALSE,FALSE,None,FALSE,Only by privilege 4
 Representative-name,String,TRUE,Not NULL,,Single field,,Moderate,3NF,FALSE,,,,,TRUE,FALSE,FALSE,None,FALSE,Only by privilege 4
-Representative-account-id,Object ID,FALSE,Optional,,Single field,,Strict,3NF,FALSE,Lookup,account,,,FALSE,FALSE,FALSE,Search,FALSE,Only by privilege 4
+Representative-account-id,Object ID,FALSE,Optional,,Single field,,Strict,3NF,FALSE,Lookup,user-account,,,FALSE,FALSE,FALSE,Search,FALSE,Only by privilege 4
 Organization-email,String,FALSE,Optional,,Single field,,Moderate,1NF,TRUE,,,,mycompany@email.com,TRUE,FALSE,TRUE,Filter,FALSE,Only by privilege 4
 Organization-address,Object ID,FALSE,Optional,,Single field,,Strict,3NF,FALSE,Lookup,address,,,FALSE,FALSE,FALSE,None,FALSE,Only by privilege 4
 Organization-phone,String,FALSE,Optional,,Text,,Moderate,1NF,FALSE,,,,(xxx) xxx-xxxx,TRUE,FALSE,FALSE,None,FALSE,Only by privilege 4
@@ -16,8 +16,8 @@ Organization-status,Int32,TRUE,Not NULL,1,Single field,status.enum.ts,Strict,1NF
 CreatedAt,Date,TRUE,Not NULL,auto (mongoose timestamps),Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,No
 UpdatedAt,Date,FALSE,Optional,auto (mongoose timestamps),Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,No
 DeletedAt,Date,FALSE,Optional,,Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,No
-CreatedBy,Object ID,TRUE,Not NULL,,Single field,,Strict,1NF,FALSE,Lookup,account.me,,,FALSE,FALSE,TRUE,Filter,TRUE,No
-UpdatedBy,Object ID,FALSE,Optional,,Single field,,Strict,1NF,FALSE,Lookup,account.me,,,FALSE,FALSE,FALSE,Filter,FALSE,No
+CreatedBy,Object ID,TRUE,Not NULL,,Single field,,Strict,1NF,FALSE,Lookup,user-account.me,,,FALSE,FALSE,TRUE,Filter,TRUE,No
+UpdatedBy,Object ID,FALSE,Optional,,Single field,,Strict,1NF,FALSE,Lookup,user-account.me,,,FALSE,FALSE,FALSE,Filter,FALSE,No
 Privilege,Int32,TRUE,Not NULL,4,Single field,privilege.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,None,FALSE,No
 Access-modifier,Int32,TRUE,Not NULL,3,Single field,access-modifier.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,None,FALSE,No
 ,,,,,,,,,,,,,,,,,,,
