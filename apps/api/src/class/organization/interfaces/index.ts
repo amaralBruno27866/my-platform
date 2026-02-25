@@ -1,3 +1,3 @@
 export * from "./organization.interface";
-export * from "./organization-dto.interface";
+export * from "../dtos";
 export * from "./organization-internal.interface";
