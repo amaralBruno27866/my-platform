@@ -75,7 +75,7 @@ export * from "./events";
 // ========================================
 // CONTROLLERS
 // ========================================
-// export * from "./controller";
+export * from "./controller";
 
 // ========================================
 // UTILITIES

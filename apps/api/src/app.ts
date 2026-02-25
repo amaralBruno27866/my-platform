@@ -1,5 +1,6 @@
 import express from "express";
 import swaggerUi from "swagger-ui-express";
+import { organizationRouter } from "./class/organization";
 import { getMongoConnectionState } from "./config/mongo";
 import { openApiDocument } from "./docs/openapi";
 
@@ -19,5 +20,7 @@ app.get("/health", (_req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.use("/private/organizations", organizationRouter);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
