@@ -1,0 +1,5 @@
+Privilege,Create,Read,Update,Soft Delete,Delete
+LOW,NO,NO,NO,NO,NO
+MEDIUM,NO,NO,NO,NO,NO
+HIGH,NO,NO,NO,NO,NO
+MASTER,YES,YES,YES,YES,YES
