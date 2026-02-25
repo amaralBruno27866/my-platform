@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getOrganizationStatusName, OrganizationSttus } from "./status.enum";
+import { getOrganizationStatusName, OrganizationSttus } from "../enums";
 
 describe("organization status enum helper", () => {
   it("returns display name for known and unknown statuses", () => {

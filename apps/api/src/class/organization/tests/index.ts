@@ -1,5 +1,6 @@
 export * from "./organization-errors.test";
 export * from "./organization.e2e.test";
+export * from "./organization-enums.test";
 export * from "./organization-events.test";
 export * from "./organization-mappers.test";
 export * from "./organization-repositories.test";

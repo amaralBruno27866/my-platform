@@ -4,6 +4,7 @@
  * Centralized export point for all Organization-related functionality:
  * - Enums
  * - Constants
+ * - DTOs
  * - Interfaces
  * - Schemas
  * - Validators
@@ -38,6 +39,11 @@ export * from "./constants";
 // INTERFACES
 // ========================================
 export * from "./interfaces";
+
+// ========================================
+// DTOS
+// ========================================
+export * from "./dtos";
 
 // ========================================
 // SCHEMAS
