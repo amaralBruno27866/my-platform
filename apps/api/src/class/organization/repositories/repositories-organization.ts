@@ -3,13 +3,24 @@ import { IOrganizationInternal } from "../interfaces";
 import { OrganizationModel } from "../schema";
 
 type OrganizationQueryFilter = {
-  _id?: Types.ObjectId;
+  _id?: Types.ObjectId | { $in: Types.ObjectId[] };
   organizationId?: Types.ObjectId;
   organizationPublicId?: string;
   slug?: string;
   deletedAt?: Date | null | { $ne: null };
   $text?: { $search: string };
 };
+
+export interface OrganizationBulkFilter {
+  applyToAll?: boolean;
+  organizationIds?: string[];
+  includeDeleted?: boolean;
+}
+
+export interface OrganizationBulkOperationResult {
+  matchedCount: number;
+  modifiedCount: number;
+}
 
 export interface OrganizationListQuery {
   page?: number;
@@ -31,6 +42,24 @@ export interface OrganizationListResult {
  * Objective: Encapsulate all persistence operations for organization documents.
  */
 export class OrganizationRepository {
+  private buildBulkFilter(
+    filterInput: OrganizationBulkFilter,
+  ): OrganizationQueryFilter {
+    const filter: OrganizationQueryFilter = {};
+
+    if (!filterInput.includeDeleted) {
+      filter.deletedAt = null;
+    }
+
+    if (!filterInput.applyToAll && filterInput.organizationIds?.length) {
+      filter._id = {
+        $in: filterInput.organizationIds.map((id) => new Types.ObjectId(id)),
+      };
+    }
+
+    return filter;
+  }
+
   async create(
     payload: Partial<IOrganizationInternal>,
   ): Promise<IOrganizationInternal> {
@@ -202,6 +231,59 @@ export class OrganizationRepository {
       },
       { new: true, runValidators: true },
     );
+  }
+
+  async bulkUpdateStatus(
+    filterInput: OrganizationBulkFilter,
+    organizationStatus: number,
+    updatedBy: string | Types.ObjectId,
+  ): Promise<OrganizationBulkOperationResult> {
+    const filter = this.buildBulkFilter(filterInput);
+
+    const result = await OrganizationModel.updateMany(
+      filter,
+      {
+        $set: {
+          organizationStatus,
+          updatedBy:
+            typeof updatedBy === "string"
+              ? new Types.ObjectId(updatedBy)
+              : updatedBy,
+        },
+      },
+      { runValidators: true },
+    );
+
+    return {
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+    };
+  }
+
+  async bulkSoftDelete(
+    filterInput: OrganizationBulkFilter,
+    updatedBy: string | Types.ObjectId,
+  ): Promise<OrganizationBulkOperationResult> {
+    const filter = this.buildBulkFilter(filterInput);
+
+    const result = await OrganizationModel.updateMany(
+      filter,
+      {
+        $set: {
+          deletedAt: new Date(),
+          updatedBy:
+            typeof updatedBy === "string"
+              ? new Types.ObjectId(updatedBy)
+              : updatedBy,
+        },
+      },
+      { runValidators: true },
+    );
+
+    return {
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+    };
   }
 }
 

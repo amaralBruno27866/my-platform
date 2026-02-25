@@ -9,9 +9,14 @@ import {
   mapOrganizationToResponse,
   mapOrganizationUpdateToPersistence,
 } from "../mappers";
-import { organizationRepository } from "../repositories";
+import {
+  organizationRepository,
+  OrganizationBulkOperationResult,
+} from "../repositories";
 import { canPerformOrganizationAction, canUpdateOrganization } from "../rules";
 import {
+  organizationBulkSoftDeleteSchema,
+  organizationBulkUpdateStatusSchema,
   organizationCreateSchema,
   organizationUpdateSchema,
 } from "../validators";
@@ -24,6 +29,19 @@ import {
 export interface OrganizationActorContext {
   accountId: string;
   privilege: Privilege;
+}
+
+export interface OrganizationBulkUpdateStatusRequest {
+  applyToAll?: boolean;
+  organizationIds?: string[];
+  organizationStatus: number;
+  includeDeleted?: boolean;
+}
+
+export interface OrganizationBulkSoftDeleteRequest {
+  applyToAll?: boolean;
+  organizationIds?: string[];
+  includeDeleted?: boolean;
 }
 
 /**
@@ -134,6 +152,47 @@ export class OrganizationCommandService {
     }
 
     return mapOrganizationToResponse(restored);
+  }
+
+  async bulkUpdateOrganizationStatus(
+    input: OrganizationBulkUpdateStatusRequest,
+    actor: OrganizationActorContext,
+  ): Promise<OrganizationBulkOperationResult> {
+    if (!canPerformOrganizationAction(actor.privilege, "update")) {
+      throw new Error("Insufficient privilege to bulk update organization");
+    }
+
+    const payload = organizationBulkUpdateStatusSchema.parse(input);
+    return organizationRepository.bulkUpdateStatus(
+      {
+        applyToAll: payload.applyToAll,
+        organizationIds: payload.organizationIds,
+        includeDeleted: payload.includeDeleted,
+      },
+      payload.organizationStatus,
+      actor.accountId,
+    );
+  }
+
+  async bulkSoftDeleteOrganizations(
+    input: OrganizationBulkSoftDeleteRequest,
+    actor: OrganizationActorContext,
+  ): Promise<OrganizationBulkOperationResult> {
+    if (!canPerformOrganizationAction(actor.privilege, "softDelete")) {
+      throw new Error(
+        "Insufficient privilege to bulk soft delete organization",
+      );
+    }
+
+    const payload = organizationBulkSoftDeleteSchema.parse(input);
+    return organizationRepository.bulkSoftDelete(
+      {
+        applyToAll: payload.applyToAll,
+        organizationIds: payload.organizationIds,
+        includeDeleted: payload.includeDeleted,
+      },
+      actor.accountId,
+    );
   }
 }
 

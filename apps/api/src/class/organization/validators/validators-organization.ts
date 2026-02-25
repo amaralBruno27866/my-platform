@@ -176,6 +176,59 @@ export const organizationImmutableFieldsSchema = z
     }
   });
 
+/**
+ * Validator: Bulk status update payload
+ * Objective: Validate mass status changes with explicit safety controls.
+ */
+export const organizationBulkUpdateStatusSchema = z
+  .object({
+    applyToAll: z.boolean().default(false),
+    organizationIds: z.array(objectIdSchema).min(1).max(1000).optional(),
+    organizationStatus: z.nativeEnum(OrganizationSttus),
+    includeDeleted: z.boolean().default(false),
+  })
+  .strict()
+  .superRefine((payload, context) => {
+    if (
+      !payload.applyToAll &&
+      (!payload.organizationIds || payload.organizationIds.length === 0)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Provide organizationIds or set applyToAll=true",
+      });
+    }
+  });
+
+/**
+ * Validator: Bulk soft-delete payload
+ * Objective: Validate mass soft-delete operations with explicit safety controls.
+ */
+export const organizationBulkSoftDeleteSchema = z
+  .object({
+    applyToAll: z.boolean().default(false),
+    organizationIds: z.array(objectIdSchema).min(1).max(1000).optional(),
+    includeDeleted: z.boolean().default(false),
+  })
+  .strict()
+  .superRefine((payload, context) => {
+    if (
+      !payload.applyToAll &&
+      (!payload.organizationIds || payload.organizationIds.length === 0)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Provide organizationIds or set applyToAll=true",
+      });
+    }
+  });
+
 export type OrganizationCreateInput = z.infer<typeof organizationCreateSchema>;
 export type OrganizationUpdateInput = z.infer<typeof organizationUpdateSchema>;
 export type OrganizationQueryInput = z.infer<typeof organizationQuerySchema>;
+export type OrganizationBulkUpdateStatusInput = z.infer<
+  typeof organizationBulkUpdateStatusSchema
+>;
+export type OrganizationBulkSoftDeleteInput = z.infer<
+  typeof organizationBulkSoftDeleteSchema
+>;
