@@ -14,6 +14,8 @@
  * - Events
  * - Controllers
  * - Utilities
+ * - Errors
+ * - Tests
  * - Modules
  * - Schema
  * - Docs
