@@ -62,8 +62,6 @@ From repository root (`my-platform`), use:
 npm run test:api
 npm run test:api:watch
 npm run test:api:coverage
-npm run -w apps/api test
-npm run -w apps/api test:coverage
 npm run -w apps/api build
 ```
 

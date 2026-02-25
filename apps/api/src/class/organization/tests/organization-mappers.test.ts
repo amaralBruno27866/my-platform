@@ -7,6 +7,7 @@ import {
   mapOrganizationUpdateToPersistence,
 } from "../mappers";
 import { OrganizationSttus } from "../enums";
+import { OrganizationModel } from "../schema";
 
 describe("organization mappers", () => {
   it("maps create dto to persistence payload", () => {
@@ -52,7 +53,7 @@ describe("organization mappers", () => {
     const createdBy = new Types.ObjectId();
     const updatedBy = new Types.ObjectId();
 
-    const response = mapOrganizationToResponse({
+    const internalDocument = OrganizationModel.hydrate({
       _id: new Types.ObjectId(),
       organizationId,
       organizationPublicId: "ORG-000999",
@@ -75,8 +76,9 @@ describe("organization mappers", () => {
       accessModifier: AccessModifier.PRIVATE,
       createdAt: new Date(),
       updatedAt: new Date(),
-      __v: 0,
     });
+
+    const response = mapOrganizationToResponse(internalDocument);
 
     expect(response.organizationId).toBe(organizationId.toString());
     expect(response.createdBy).toBe(createdBy.toString());
