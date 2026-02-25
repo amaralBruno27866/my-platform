@@ -25,6 +25,7 @@ import {
   IOrganizationResponseDTO,
   IOrganizationUpdateDTO,
 } from "../interfaces";
+import { OrganizationEventName, organizationEvents } from "../events";
 
 export interface OrganizationActorContext {
   accountId: string;
@@ -49,6 +50,13 @@ export interface OrganizationBulkSoftDeleteRequest {
  * Objective: Handle state-changing use cases (create/update/delete/restore).
  */
 export class OrganizationCommandService {
+  private createEventContext(actor: OrganizationActorContext) {
+    return {
+      actorAccountId: actor.accountId,
+      occurredAt: new Date().toISOString(),
+    } as const;
+  }
+
   private async generateOrganizationPublicId(): Promise<string> {
     const { total } = await organizationRepository.list({
       page: 1,
@@ -82,7 +90,14 @@ export class OrganizationCommandService {
     });
 
     const created = await organizationRepository.create(createPayload);
-    return mapOrganizationToResponse(created);
+    const response = mapOrganizationToResponse(created);
+
+    organizationEvents.emit(OrganizationEventName.CREATED, {
+      context: this.createEventContext(actor),
+      organization: response,
+    });
+
+    return response;
   }
 
   async updateOrganization(
@@ -113,7 +128,14 @@ export class OrganizationCommandService {
       throw new Error("Organization not found");
     }
 
-    return mapOrganizationToResponse(updated);
+    const response = mapOrganizationToResponse(updated);
+
+    organizationEvents.emit(OrganizationEventName.UPDATED, {
+      context: this.createEventContext(actor),
+      organization: response,
+    });
+
+    return response;
   }
 
   async softDeleteOrganization(
@@ -132,7 +154,14 @@ export class OrganizationCommandService {
       throw new Error("Organization not found or already deleted");
     }
 
-    return mapOrganizationToResponse(deleted);
+    const response = mapOrganizationToResponse(deleted);
+
+    organizationEvents.emit(OrganizationEventName.SOFT_DELETED, {
+      context: this.createEventContext(actor),
+      organization: response,
+    });
+
+    return response;
   }
 
   async restoreOrganization(
@@ -151,7 +180,14 @@ export class OrganizationCommandService {
       throw new Error("Organization not found or not deleted");
     }
 
-    return mapOrganizationToResponse(restored);
+    const response = mapOrganizationToResponse(restored);
+
+    organizationEvents.emit(OrganizationEventName.RESTORED, {
+      context: this.createEventContext(actor),
+      organization: response,
+    });
+
+    return response;
   }
 
   async bulkUpdateOrganizationStatus(
@@ -163,7 +199,7 @@ export class OrganizationCommandService {
     }
 
     const payload = organizationBulkUpdateStatusSchema.parse(input);
-    return organizationRepository.bulkUpdateStatus(
+    const result = await organizationRepository.bulkUpdateStatus(
       {
         applyToAll: payload.applyToAll,
         organizationIds: payload.organizationIds,
@@ -172,6 +208,14 @@ export class OrganizationCommandService {
       payload.organizationStatus,
       actor.accountId,
     );
+
+    organizationEvents.emit(OrganizationEventName.BULK_STATUS_UPDATED, {
+      context: this.createEventContext(actor),
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+    });
+
+    return result;
   }
 
   async bulkSoftDeleteOrganizations(
@@ -185,7 +229,7 @@ export class OrganizationCommandService {
     }
 
     const payload = organizationBulkSoftDeleteSchema.parse(input);
-    return organizationRepository.bulkSoftDelete(
+    const result = await organizationRepository.bulkSoftDelete(
       {
         applyToAll: payload.applyToAll,
         organizationIds: payload.organizationIds,
@@ -193,6 +237,14 @@ export class OrganizationCommandService {
       },
       actor.accountId,
     );
+
+    organizationEvents.emit(OrganizationEventName.BULK_SOFT_DELETED, {
+      context: this.createEventContext(actor),
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+    });
+
+    return result;
   }
 }
 
