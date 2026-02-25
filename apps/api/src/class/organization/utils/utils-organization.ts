@@ -75,7 +75,7 @@ export function normalizeOrganizationCreateInput(
 export function normalizeOrganizationUpdateInput(
   input: IOrganizationUpdateDTO,
 ): IOrganizationUpdateDTO {
-  return {
+  const normalized: IOrganizationUpdateDTO = {
     ...input,
     organizationName: input.organizationName
       ? formatOrganizationName(input.organizationName)
@@ -94,6 +94,10 @@ export function normalizeOrganizationUpdateInput(
       ? formatNorthAmericanPhone(input.organizationPhone)
       : undefined,
   };
+
+  return Object.fromEntries(
+    Object.entries(normalized).filter(([, value]) => value !== undefined),
+  ) as IOrganizationUpdateDTO;
 }
 
 export function buildOrganizationPublicId(

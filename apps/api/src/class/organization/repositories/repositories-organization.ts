@@ -177,7 +177,7 @@ export class OrganizationRepository {
         deletedAt: null,
       },
       { $set: payload },
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     );
   }
 
@@ -203,7 +203,7 @@ export class OrganizationRepository {
             : {}),
         },
       },
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     );
   }
 
@@ -229,7 +229,7 @@ export class OrganizationRepository {
             : {}),
         },
       },
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     );
   }
 
