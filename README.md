@@ -1,5 +1,8 @@
 # My Platform (MEAN)
 
+[![API CI](https://github.com/amaralBruno27866/my-platform/actions/workflows/api-ci.yml/badge.svg)](https://github.com/amaralBruno27866/my-platform/actions/workflows/api-ci.yml)
+![Coverage Gate](https://img.shields.io/badge/coverage%20gate-90%2F75%2F90%2F90-blue)
+
 Initial repository setup for a MEAN project with:
 - MongoDB
 - Express (Node.js/TypeScript API)
@@ -50,6 +53,33 @@ npx @angular/cli@latest new apps/web --standalone --routing --style=scss --skip-
 ```bash
 npm run down:infra
 ```
+
+## 6) Quality and automated tests
+
+From repository root (`my-platform`), use:
+
+```bash
+npm run test:api
+npm run test:api:watch
+npm run test:api:coverage
+npm run -w apps/api test
+npm run -w apps/api test:coverage
+npm run -w apps/api build
+```
+
+If you are already inside `apps/api`, use:
+
+```bash
+npm run test
+npm run test:coverage
+npm run build
+```
+
+Coverage is validated by threshold gate in CI (`statements >= 90`, `branches >= 75`, `functions >= 90`, `lines >= 90`).
+
+Detailed Organization test documentation:
+
+- `apps/api/src/class/organization/tests/README.md`
 
 ## Current structure
 

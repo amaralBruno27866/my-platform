@@ -13,6 +13,13 @@
     "health:infra": "docker compose ps",
     "prepare:all": "npm install --workspaces --if-present",
     "dev:api": "npm run dev -w apps/api",
-    "dev:web": "npm run start -w apps/web"
+    "dev:web": "npm run start -w apps/web",
+    "build:api": "npm run build -w apps/api",
+    "test:api": "npm run test -w apps/api",
+    "test:api:watch": "npm run test:watch -w apps/api",
+    "test:api:coverage": "npm run test:coverage -w apps/api",
+    "test": "npm run test -w apps/api",
+    "test:watch": "npm run test:watch -w apps/api",
+    "test:coverage": "npm run test:coverage -w apps/api"
   }
 }
