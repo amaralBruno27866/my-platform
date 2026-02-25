@@ -13,6 +13,7 @@ import {
   organizationRepository,
   OrganizationBulkOperationResult,
 } from "../repositories";
+import { organizationCacheService } from "./services-organization-cache";
 import { canPerformOrganizationAction, canUpdateOrganization } from "../rules";
 import {
   organizationBulkSoftDeleteSchema,
@@ -105,6 +106,10 @@ export class OrganizationCommandService {
     const created = await organizationRepository.create(createPayload);
     const response = mapOrganizationToResponse(created);
 
+    await organizationCacheService.setById(response.organizationId, response);
+    await organizationCacheService.setBySlug(response.slug, response);
+    await organizationCacheService.invalidateLists();
+
     organizationEvents.emit(OrganizationEventName.CREATED, {
       context: this.createEventContext(actor),
       organization: maskSensitiveOrganizationData(response),
@@ -153,6 +158,12 @@ export class OrganizationCommandService {
     const before = mapOrganizationToResponse(current);
     const changes = buildOrganizationChangeSet(before, response);
 
+    await organizationCacheService.invalidateById(id);
+    await organizationCacheService.invalidateBySlug(before.slug);
+    await organizationCacheService.setById(response.organizationId, response);
+    await organizationCacheService.setBySlug(response.slug, response);
+    await organizationCacheService.invalidateLists();
+
     organizationEvents.emit(OrganizationEventName.UPDATED, {
       context: this.createEventContext(actor),
       organization: maskSensitiveOrganizationData(response),
@@ -184,6 +195,10 @@ export class OrganizationCommandService {
 
     const response = mapOrganizationToResponse(deleted);
 
+    await organizationCacheService.invalidateById(id);
+    await organizationCacheService.invalidateBySlug(response.slug);
+    await organizationCacheService.invalidateLists();
+
     organizationEvents.emit(OrganizationEventName.SOFT_DELETED, {
       context: this.createEventContext(actor),
       organization: maskSensitiveOrganizationData(response),
@@ -214,6 +229,10 @@ export class OrganizationCommandService {
 
     const response = mapOrganizationToResponse(restored);
 
+    await organizationCacheService.setById(response.organizationId, response);
+    await organizationCacheService.setBySlug(response.slug, response);
+    await organizationCacheService.invalidateLists();
+
     organizationEvents.emit(OrganizationEventName.RESTORED, {
       context: this.createEventContext(actor),
       organization: maskSensitiveOrganizationData(response),
@@ -243,6 +262,8 @@ export class OrganizationCommandService {
       actor.accountId,
     );
 
+    await organizationCacheService.invalidateLists();
+
     organizationEvents.emit(OrganizationEventName.BULK_STATUS_UPDATED, {
       context: this.createEventContext(actor),
       matchedCount: result.matchedCount,
@@ -271,6 +292,8 @@ export class OrganizationCommandService {
       },
       actor.accountId,
     );
+
+    await organizationCacheService.invalidateLists();
 
     organizationEvents.emit(OrganizationEventName.BULK_SOFT_DELETED, {
       context: this.createEventContext(actor),

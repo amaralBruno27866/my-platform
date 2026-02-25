@@ -1,4 +1,7 @@
 import { Types } from "mongoose";
+import { createHash } from "node:crypto";
+import { env } from "../../config/env";
+import { redisCacheService } from "../../infra/redis";
 import {
   AuthLoginRequest,
   AuthLoginResponse,
@@ -43,7 +46,12 @@ class InMemoryAuthStore {
   private byId = new Map<string, AuthAccountRecord>();
   private byEmail = new Map<string, AuthAccountRecord>();
 
-  signup(input: AuthSignupRequest): AuthSignupResponse {
+  private sessionKey(token: string): string {
+    const digest = createHash("sha256").update(token).digest("hex");
+    return `auth:session:${digest}`;
+  }
+
+  async signup(input: AuthSignupRequest): Promise<AuthSignupResponse> {
     const normalizedEmail = input.email.trim().toLowerCase();
 
     if (this.byEmail.has(normalizedEmail)) {
@@ -82,7 +90,7 @@ class InMemoryAuthStore {
     };
   }
 
-  login(input: AuthLoginRequest): AuthLoginResponse {
+  async login(input: AuthLoginRequest): Promise<AuthLoginResponse> {
     const normalizedEmail = input.email.trim().toLowerCase();
     const account = this.byEmail.get(normalizedEmail);
 
@@ -108,6 +116,14 @@ class InMemoryAuthStore {
       organizationId: account.organizationId,
     });
 
+    await redisCacheService.setJson(
+      this.sessionKey(accessToken),
+      {
+        accountId: account.accountId,
+      },
+      env.redisAuthSessionTtlSeconds,
+    );
+
     return {
       accessToken,
       tokenType: "Bearer",
@@ -124,7 +140,22 @@ class InMemoryAuthStore {
     };
   }
 
-  me(accountId: string): AuthMeResponse {
+  async ensureTokenIsActive(
+    token: string,
+    accountId: string,
+  ): Promise<boolean> {
+    const session = await redisCacheService.getJson<{ accountId: string }>(
+      this.sessionKey(token),
+    );
+
+    if (!session) {
+      return true;
+    }
+
+    return session.accountId === accountId;
+  }
+
+  async me(accountId: string): Promise<AuthMeResponse> {
     const account = this.byId.get(accountId);
 
     if (!account) {

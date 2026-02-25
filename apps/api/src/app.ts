@@ -4,6 +4,7 @@ import { registerAuthModule } from "./auth";
 import { registerOrganizationModule } from "./class/organization";
 import { getMongoConnectionState } from "./config/mongo";
 import { openApiDocument } from "./docs/openapi";
+import { getRedisConnectionState } from "./infra/redis";
 
 export const app = express();
 
@@ -17,6 +18,7 @@ app.get("/health", (_req, res) => {
   res.status(200).json({
     status: "ok",
     mongo: getMongoConnectionState(),
+    redis: getRedisConnectionState(),
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });

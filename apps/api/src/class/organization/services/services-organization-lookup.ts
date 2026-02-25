@@ -4,6 +4,7 @@ import { organizationRepository } from "../repositories";
 import { canReadOrganization } from "../rules";
 import { organizationQuerySchema } from "../validators";
 import { IOrganizationResponseDTO } from "../interfaces";
+import { organizationCacheService } from "./services-organization-cache";
 import {
   OrganizationForbiddenError,
   OrganizationNotFoundError,
@@ -39,12 +40,20 @@ export class OrganizationLookupService {
   ): Promise<IOrganizationResponseDTO> {
     this.ensureReadPermission(actor);
 
+    const cached = await organizationCacheService.getById(id);
+    if (cached) {
+      return cached;
+    }
+
     const found = await organizationRepository.findById(id);
     if (!found) {
       throw new OrganizationNotFoundError("Organization not found");
     }
 
-    return mapOrganizationToResponse(found);
+    const response = mapOrganizationToResponse(found);
+    await organizationCacheService.setById(id, response);
+    await organizationCacheService.setBySlug(response.slug, response);
+    return response;
   }
 
   async getOrganizationBySlug(
@@ -53,12 +62,20 @@ export class OrganizationLookupService {
   ): Promise<IOrganizationResponseDTO> {
     this.ensureReadPermission(actor);
 
+    const cached = await organizationCacheService.getBySlug(slug);
+    if (cached) {
+      return cached;
+    }
+
     const found = await organizationRepository.findBySlug(slug);
     if (!found) {
       throw new OrganizationNotFoundError("Organization not found");
     }
 
-    return mapOrganizationToResponse(found);
+    const response = mapOrganizationToResponse(found);
+    await organizationCacheService.setById(response.organizationId, response);
+    await organizationCacheService.setBySlug(slug, response);
+    return response;
   }
 
   async listOrganizations(
@@ -66,6 +83,11 @@ export class OrganizationLookupService {
     actor: OrganizationLookupActorContext,
   ): Promise<OrganizationLookupListResult> {
     this.ensureReadPermission(actor);
+
+    const cached = await organizationCacheService.getList(queryInput);
+    if (cached) {
+      return cached;
+    }
 
     const query = organizationQuerySchema.parse(queryInput ?? {});
     const result = await organizationRepository.list({
@@ -76,12 +98,15 @@ export class OrganizationLookupService {
       includeDeleted: query.includeDeleted,
     });
 
-    return {
+    const response = {
       data: result.data.map(mapOrganizationToResponse),
       total: result.total,
       page: result.page,
       limit: result.limit,
     };
+
+    await organizationCacheService.setList(queryInput, response);
+    return response;
   }
 }
 
