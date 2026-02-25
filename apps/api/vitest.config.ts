@@ -18,6 +18,7 @@ export default defineConfig({
       exclude: [
         "src/**/index.ts",
         "src/**/*.interface.ts",
+        "src/class/**/dtos/**",
         "src/class/**/tests/**",
       ],
     },
