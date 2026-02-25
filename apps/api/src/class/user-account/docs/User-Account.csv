@@ -28,7 +28,7 @@ Relationship summary,"A User Account connects to an organization in a relationsh
 Cardinality summary,N:1,,,,,,,,,,,,,,,,,,
 Indexes,,,,,,,,,,,,,,,,,,,
 Audit enable,Enabled,,,,,,,,,,,,,,,,,,
-API level,Private,,,,,,,,,,,,,,,,,,
+API level,Private (except public signup),,,,,,,,,,,,,,,,,,
 PII level,Sensitive,,,,,,,,,,,,,,,,,,
 Relation policy,Cascade,,,,,,,,,,,,,,,,,,
 Migration notes,,,,,,,,,,,,,,,,,,,
