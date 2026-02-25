@@ -4,6 +4,10 @@ import { organizationRepository } from "../repositories";
 import { canReadOrganization } from "../rules";
 import { organizationQuerySchema } from "../validators";
 import { IOrganizationResponseDTO } from "../interfaces";
+import {
+  OrganizationForbiddenError,
+  OrganizationNotFoundError,
+} from "../errors";
 
 export interface OrganizationLookupActorContext {
   privilege: Privilege;
@@ -23,7 +27,9 @@ export interface OrganizationLookupListResult {
 export class OrganizationLookupService {
   private ensureReadPermission(actor: OrganizationLookupActorContext): void {
     if (!canReadOrganization(actor.privilege)) {
-      throw new Error("Insufficient privilege to read organization data");
+      throw new OrganizationForbiddenError(
+        "Insufficient privilege to read organization data",
+      );
     }
   }
 
@@ -35,7 +41,7 @@ export class OrganizationLookupService {
 
     const found = await organizationRepository.findById(id);
     if (!found) {
-      throw new Error("Organization not found");
+      throw new OrganizationNotFoundError("Organization not found");
     }
 
     return mapOrganizationToResponse(found);
@@ -49,7 +55,7 @@ export class OrganizationLookupService {
 
     const found = await organizationRepository.findBySlug(slug);
     if (!found) {
-      throw new Error("Organization not found");
+      throw new OrganizationNotFoundError("Organization not found");
     }
 
     return mapOrganizationToResponse(found);

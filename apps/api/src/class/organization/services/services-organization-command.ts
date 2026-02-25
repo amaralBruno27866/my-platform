@@ -27,6 +27,11 @@ import {
 } from "../interfaces";
 import { OrganizationEventName, organizationEvents } from "../events";
 import {
+  OrganizationBadRequestError,
+  OrganizationForbiddenError,
+  OrganizationNotFoundError,
+} from "../errors";
+import {
   buildOrganizationChangeSet,
   buildOrganizationPublicId,
   maskSensitiveOrganizationData,
@@ -83,7 +88,9 @@ export class OrganizationCommandService {
     actor: OrganizationActorContext,
   ): Promise<IOrganizationResponseDTO> {
     if (!canPerformOrganizationAction(actor.privilege, "create")) {
-      throw new Error("Insufficient privilege to create organization");
+      throw new OrganizationForbiddenError(
+        "Insufficient privilege to create organization",
+      );
     }
 
     const normalizedInput = normalizeOrganizationCreateInput(input);
@@ -118,17 +125,19 @@ export class OrganizationCommandService {
 
     if (!policy.allowed) {
       if (policy.reason === "FORBIDDEN_FIELDS") {
-        throw new Error(
+        throw new OrganizationBadRequestError(
           `Forbidden update fields: ${(policy.forbiddenFields ?? []).join(", ")}`,
         );
       }
 
-      throw new Error("Insufficient privilege to update organization");
+      throw new OrganizationForbiddenError(
+        "Insufficient privilege to update organization",
+      );
     }
 
     const current = await organizationRepository.findById(id);
     if (!current) {
-      throw new Error("Organization not found");
+      throw new OrganizationNotFoundError("Organization not found");
     }
 
     const updatePayload = mapOrganizationUpdateToPersistence(payload, {
@@ -137,7 +146,7 @@ export class OrganizationCommandService {
 
     const updated = await organizationRepository.updateById(id, updatePayload);
     if (!updated) {
-      throw new Error("Organization not found");
+      throw new OrganizationNotFoundError("Organization not found");
     }
 
     const response = mapOrganizationToResponse(updated);
@@ -158,7 +167,9 @@ export class OrganizationCommandService {
     actor: OrganizationActorContext,
   ): Promise<IOrganizationResponseDTO> {
     if (!canPerformOrganizationAction(actor.privilege, "softDelete")) {
-      throw new Error("Insufficient privilege to soft delete organization");
+      throw new OrganizationForbiddenError(
+        "Insufficient privilege to soft delete organization",
+      );
     }
 
     const deleted = await organizationRepository.softDeleteById(
@@ -166,7 +177,9 @@ export class OrganizationCommandService {
       actor.accountId,
     );
     if (!deleted) {
-      throw new Error("Organization not found or already deleted");
+      throw new OrganizationNotFoundError(
+        "Organization not found or already deleted",
+      );
     }
 
     const response = mapOrganizationToResponse(deleted);
@@ -184,7 +197,9 @@ export class OrganizationCommandService {
     actor: OrganizationActorContext,
   ): Promise<IOrganizationResponseDTO> {
     if (!canPerformOrganizationAction(actor.privilege, "restore")) {
-      throw new Error("Insufficient privilege to restore organization");
+      throw new OrganizationForbiddenError(
+        "Insufficient privilege to restore organization",
+      );
     }
 
     const restored = await organizationRepository.restoreById(
@@ -192,7 +207,9 @@ export class OrganizationCommandService {
       actor.accountId,
     );
     if (!restored) {
-      throw new Error("Organization not found or not deleted");
+      throw new OrganizationNotFoundError(
+        "Organization not found or not deleted",
+      );
     }
 
     const response = mapOrganizationToResponse(restored);
@@ -210,7 +227,9 @@ export class OrganizationCommandService {
     actor: OrganizationActorContext,
   ): Promise<OrganizationBulkOperationResult> {
     if (!canPerformOrganizationAction(actor.privilege, "update")) {
-      throw new Error("Insufficient privilege to bulk update organization");
+      throw new OrganizationForbiddenError(
+        "Insufficient privilege to bulk update organization",
+      );
     }
 
     const payload = organizationBulkUpdateStatusSchema.parse(input);
@@ -238,7 +257,7 @@ export class OrganizationCommandService {
     actor: OrganizationActorContext,
   ): Promise<OrganizationBulkOperationResult> {
     if (!canPerformOrganizationAction(actor.privilege, "softDelete")) {
-      throw new Error(
+      throw new OrganizationForbiddenError(
         "Insufficient privilege to bulk soft delete organization",
       );
     }

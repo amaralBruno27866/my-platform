@@ -1,6 +1,11 @@
 import { Request, Response, Router } from "express";
 import { Privilege } from "../../../common/enums";
 import {
+  HttpStatus,
+  toOrganizationAppError,
+  OrganizationBadRequestError,
+} from "../errors";
+import {
   organizationCommandService,
   organizationLookupService,
   OrganizationActorContext,
@@ -23,12 +28,14 @@ function parseActorContext(req: Request): OrganizationActorContext {
   const privilegeRaw = req.header("x-privilege");
 
   if (!accountId || !privilegeRaw) {
-    throw new Error("Missing actor headers: x-account-id and x-privilege");
+    throw new OrganizationBadRequestError(
+      "Missing actor headers: x-account-id and x-privilege",
+    );
   }
 
   const privilege = Number(privilegeRaw);
   if (!Object.values(Privilege).includes(privilege as Privilege)) {
-    throw new Error("Invalid x-privilege header");
+    throw new OrganizationBadRequestError("Invalid x-privilege header");
   }
 
   return {
@@ -38,30 +45,13 @@ function parseActorContext(req: Request): OrganizationActorContext {
 }
 
 function handleControllerError(error: unknown, res: Response): void {
-  const message = error instanceof Error ? error.message : "Unexpected error";
+  const appError = toOrganizationAppError(error);
 
-  if (
-    message.includes("Invalid") ||
-    message.includes("Missing actor headers") ||
-    message.includes("At least one field") ||
-    message.includes("Provide organizationIds") ||
-    message.includes("Forbidden update fields")
-  ) {
-    res.status(400).json({ message });
-    return;
-  }
-
-  if (message.includes("Insufficient privilege")) {
-    res.status(403).json({ message });
-    return;
-  }
-
-  if (message.includes("not found")) {
-    res.status(404).json({ message });
-    return;
-  }
-
-  res.status(500).json({ message });
+  res.status(appError.statusCode).json({
+    message: appError.message,
+    code: appError.code,
+    details: appError.details,
+  });
 }
 
 organizationRouter.post("/", async (req: Request, res: Response) => {
@@ -72,7 +62,7 @@ organizationRouter.post("/", async (req: Request, res: Response) => {
       actor,
     );
 
-    res.status(201).json(created);
+    res.status(HttpStatus.CREATED).json(created);
   } catch (error) {
     handleControllerError(error, res);
   }
@@ -86,7 +76,7 @@ organizationRouter.get("/", async (req: Request, res: Response) => {
       actor,
     );
 
-    res.status(200).json(result);
+    res.status(HttpStatus.OK).json(result);
   } catch (error) {
     handleControllerError(error, res);
   }
@@ -100,7 +90,7 @@ organizationRouter.get("/slug/:slug", async (req: Request, res: Response) => {
       actor,
     );
 
-    res.status(200).json(found);
+    res.status(HttpStatus.OK).json(found);
   } catch (error) {
     handleControllerError(error, res);
   }
@@ -114,7 +104,7 @@ organizationRouter.get("/:id", async (req: Request, res: Response) => {
       actor,
     );
 
-    res.status(200).json(found);
+    res.status(HttpStatus.OK).json(found);
   } catch (error) {
     handleControllerError(error, res);
   }
@@ -129,7 +119,7 @@ organizationRouter.patch("/:id", async (req: Request, res: Response) => {
       actor,
     );
 
-    res.status(200).json(updated);
+    res.status(HttpStatus.OK).json(updated);
   } catch (error) {
     handleControllerError(error, res);
   }
@@ -143,7 +133,7 @@ organizationRouter.delete("/:id", async (req: Request, res: Response) => {
       actor,
     );
 
-    res.status(200).json(deleted);
+    res.status(HttpStatus.OK).json(deleted);
   } catch (error) {
     handleControllerError(error, res);
   }
@@ -157,7 +147,7 @@ organizationRouter.post("/:id/restore", async (req: Request, res: Response) => {
       actor,
     );
 
-    res.status(200).json(restored);
+    res.status(HttpStatus.OK).json(restored);
   } catch (error) {
     handleControllerError(error, res);
   }
@@ -174,7 +164,7 @@ organizationRouter.patch(
           actor,
         );
 
-      res.status(200).json(result);
+      res.status(HttpStatus.OK).json(result);
     } catch (error) {
       handleControllerError(error, res);
     }
@@ -189,7 +179,7 @@ organizationRouter.delete("/bulk", async (req: Request, res: Response) => {
       actor,
     );
 
-    res.status(200).json(result);
+    res.status(HttpStatus.OK).json(result);
   } catch (error) {
     handleControllerError(error, res);
   }
