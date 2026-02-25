@@ -1,14 +1,16 @@
 import {
   OrganizationBulkDeleteInput,
-  OrganizationBulkResult,
   OrganizationBulkStatusInput,
   OrganizationCreateInput,
+  OrganizationUpdateInput,
+} from "../models/organization-form.types";
+import {
+  OrganizationBulkResult,
   OrganizationListQuery,
   OrganizationListResult,
-  OrganizationUpdateInput,
   OrganizationView,
-} from "../models";
-import { OrganizationMockProvider } from "../mock";
+} from "../models/organization.types";
+import { OrganizationMockProvider } from "../mock/organization.mock-provider";
 import { IOrganizationProvider } from "./organization-provider.interface";
 
 export class OrganizationService {

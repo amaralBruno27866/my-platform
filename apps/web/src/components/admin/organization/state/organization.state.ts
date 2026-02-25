@@ -2,11 +2,13 @@ import {
   OrganizationBulkDeleteInput,
   OrganizationBulkStatusInput,
   OrganizationCreateInput,
+  OrganizationUpdateInput,
+} from "../models/organization-form.types";
+import {
   OrganizationListQuery,
   OrganizationListResult,
-  OrganizationUpdateInput,
   OrganizationView,
-} from "../models";
+} from "../models/organization.types";
 import {
   organizationService,
   OrganizationService,

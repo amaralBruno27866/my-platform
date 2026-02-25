@@ -1,4 +1,7 @@
-import { OrganizationCreateInput, OrganizationUpdateInput } from "../models";
+import {
+  OrganizationCreateInput,
+  OrganizationUpdateInput,
+} from "../models/organization-form.types";
 
 export function validateCreateOrganizationInput(
   input: OrganizationCreateInput,

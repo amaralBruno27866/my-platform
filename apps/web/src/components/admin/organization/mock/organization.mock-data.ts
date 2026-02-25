@@ -1,4 +1,7 @@
-import { OrganizationView, OrganizationStatus } from "../models";
+import {
+  OrganizationStatus,
+  OrganizationView,
+} from "../models/organization.types";
 
 export const organizationMockData: OrganizationView[] = [
   {

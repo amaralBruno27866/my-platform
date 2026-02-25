@@ -1,8 +1,8 @@
+import { OrganizationCreateInput } from "../models/organization-form.types";
 import {
-  OrganizationCreateInput,
   OrganizationStatus,
   OrganizationView,
-} from "../models";
+} from "../models/organization.types";
 
 function toSlug(value: string): string {
   return value

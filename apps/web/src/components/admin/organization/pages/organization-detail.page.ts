@@ -1,4 +1,4 @@
-import { organizationState } from "../state";
+import { organizationState } from "../state/organization.state";
 
 export async function loadOrganizationDetailPage(organizationId: string) {
   await organizationState.selectById(organizationId);

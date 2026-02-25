@@ -1,5 +1,8 @@
-import { OrganizationCreateInput, OrganizationUpdateInput } from "../models";
-import { organizationState } from "../state";
+import {
+  OrganizationCreateInput,
+  OrganizationUpdateInput,
+} from "../models/organization-form.types";
+import { organizationState } from "../state/organization.state";
 
 export async function submitOrganizationCreatePage(
   input: OrganizationCreateInput,

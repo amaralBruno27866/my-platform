@@ -1,13 +1,15 @@
 import {
   OrganizationBulkDeleteInput,
-  OrganizationBulkResult,
   OrganizationBulkStatusInput,
   OrganizationCreateInput,
+  OrganizationUpdateInput,
+} from "../models/organization-form.types";
+import {
+  OrganizationBulkResult,
   OrganizationListQuery,
   OrganizationListResult,
-  OrganizationUpdateInput,
   OrganizationView,
-} from "../models";
+} from "../models/organization.types";
 import { IOrganizationProvider } from "../services/organization-provider.interface";
 import { mapCreateInputToOrganizationView } from "../mappers/organization-view.mapper";
 import { organizationMockData } from "./organization.mock-data";

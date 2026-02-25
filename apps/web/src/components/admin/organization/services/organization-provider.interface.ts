@@ -1,13 +1,15 @@
 import {
   OrganizationBulkDeleteInput,
-  OrganizationBulkResult,
   OrganizationBulkStatusInput,
   OrganizationCreateInput,
+  OrganizationUpdateInput,
+} from "../models/organization-form.types";
+import {
+  OrganizationBulkResult,
   OrganizationListQuery,
   OrganizationListResult,
-  OrganizationUpdateInput,
   OrganizationView,
-} from "../models";
+} from "../models/organization.types";
 
 export interface IOrganizationProvider {
   list(query?: OrganizationListQuery): Promise<OrganizationListResult>;

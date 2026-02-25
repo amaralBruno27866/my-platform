@@ -1,4 +1,4 @@
-import { OrganizationView } from "../models";
+import { OrganizationView } from "../models/organization.types";
 
 export interface OrganizationTableProps {
   rows: OrganizationView[];

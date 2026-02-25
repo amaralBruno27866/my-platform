@@ -1,4 +1,4 @@
-import { OrganizationStatus } from "../models";
+import { OrganizationStatus } from "../models/organization.types";
 
 export interface OrganizationBulkActionsProps {
   selectedIds: string[];
