@@ -22,8 +22,13 @@ if (!mongoUri) {
   throw new Error("MONGO_URI is required");
 }
 
+const authJwtSecret = process.env.AUTH_JWT_SECRET ?? "dev-only-change-me";
+const authJwtExpiresIn = process.env.AUTH_JWT_EXPIRES_IN ?? "15m";
+
 export const env = {
   nodeEnv: process.env.NODE_ENV ?? "development",
   port: Number(process.env.PORT ?? 3000),
   mongoUri,
+  authJwtSecret,
+  authJwtExpiresIn,
 } as const;

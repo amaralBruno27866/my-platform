@@ -1,5 +1,6 @@
 import express from "express";
 import swaggerUi from "swagger-ui-express";
+import { registerAuthModule } from "./auth";
 import { registerOrganizationModule } from "./class/organization";
 import { getMongoConnectionState } from "./config/mongo";
 import { openApiDocument } from "./docs/openapi";
@@ -22,5 +23,6 @@ app.get("/health", (_req, res) => {
 });
 
 registerOrganizationModule(app);
+registerAuthModule(app);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
