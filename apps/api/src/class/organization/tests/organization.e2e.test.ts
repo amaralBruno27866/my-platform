@@ -135,6 +135,16 @@ describe("organization API e2e", () => {
     expect(response.body.code).toBe(OrganizationErrorCode.BAD_REQUEST);
   });
 
+  it("returns 400 for invalid privilege header", async () => {
+    const response = await request(app).get("/private/organizations").set({
+      "x-account-id": new Types.ObjectId().toString(),
+      "x-privilege": "invalid",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe(OrganizationErrorCode.BAD_REQUEST);
+  });
+
   it("returns 403 for insufficient privilege", async () => {
     const response = await request(app)
       .post("/private/organizations")
@@ -152,6 +162,53 @@ describe("organization API e2e", () => {
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe(OrganizationErrorCode.NOT_FOUND);
+  });
+
+  it("returns 404 for non-existing slug", async () => {
+    const response = await request(app)
+      .get("/private/organizations/slug/missing-slug")
+      .set(buildHeaders());
+
+    expect(response.status).toBe(404);
+    expect(response.body.code).toBe(OrganizationErrorCode.NOT_FOUND);
+  });
+
+  it("returns 400 for invalid query payload", async () => {
+    const response = await request(app)
+      .get("/private/organizations")
+      .set(buildHeaders())
+      .query({ limit: 9999 });
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe(OrganizationErrorCode.BAD_REQUEST);
+  });
+
+  it("returns 400 for invalid bulk status payload", async () => {
+    const response = await request(app)
+      .patch("/private/organizations/bulk/status")
+      .set(buildHeaders())
+      .send({
+        applyToAll: false,
+        organizationStatus: OrganizationSttus.ACTIVE,
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe(OrganizationErrorCode.BAD_REQUEST);
+  });
+
+  it("returns 400 for forbidden update fields", async () => {
+    const createResponse = await request(app)
+      .post("/private/organizations")
+      .set(buildHeaders())
+      .send(buildCreatePayload("ForbiddenUpdate"));
+
+    const updateResponse = await request(app)
+      .patch(`/private/organizations/${createResponse.body.organizationId}`)
+      .set(buildHeaders())
+      .send({ organizationId: new Types.ObjectId().toString() });
+
+    expect(updateResponse.status).toBe(400);
+    expect(updateResponse.body.code).toBe(OrganizationErrorCode.BAD_REQUEST);
   });
 
   it("returns 409 for duplicate unique values", async () => {
