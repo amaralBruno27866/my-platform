@@ -26,6 +26,13 @@ import {
   IOrganizationUpdateDTO,
 } from "../interfaces";
 import { OrganizationEventName, organizationEvents } from "../events";
+import {
+  buildOrganizationChangeSet,
+  buildOrganizationPublicId,
+  maskSensitiveOrganizationData,
+  normalizeOrganizationCreateInput,
+  normalizeOrganizationUpdateInput,
+} from "../utils";
 
 export interface OrganizationActorContext {
   accountId: string;
@@ -64,13 +71,11 @@ export class OrganizationCommandService {
       includeDeleted: true,
     });
 
-    const nextSequence = total + 1;
-    const sequence = String(nextSequence).padStart(
-      ORGANIZATION_PUBLIC_ID_PAD_LENGTH,
-      "0",
-    );
-
-    return `${ORGANIZATION_PUBLIC_ID_PREFIX}${ORGANIZATION_PUBLIC_ID_SEPARATOR}${sequence}`;
+    return buildOrganizationPublicId(total + 1, {
+      prefix: ORGANIZATION_PUBLIC_ID_PREFIX,
+      separator: ORGANIZATION_PUBLIC_ID_SEPARATOR,
+      padLength: ORGANIZATION_PUBLIC_ID_PAD_LENGTH,
+    });
   }
 
   async createOrganization(
@@ -81,7 +86,8 @@ export class OrganizationCommandService {
       throw new Error("Insufficient privilege to create organization");
     }
 
-    const payload = organizationCreateSchema.parse(input);
+    const normalizedInput = normalizeOrganizationCreateInput(input);
+    const payload = organizationCreateSchema.parse(normalizedInput);
 
     const organizationPublicId = await this.generateOrganizationPublicId();
     const createPayload = mapOrganizationCreateToPersistence(payload, {
@@ -94,7 +100,7 @@ export class OrganizationCommandService {
 
     organizationEvents.emit(OrganizationEventName.CREATED, {
       context: this.createEventContext(actor),
-      organization: response,
+      organization: maskSensitiveOrganizationData(response),
     });
 
     return response;
@@ -105,7 +111,8 @@ export class OrganizationCommandService {
     input: IOrganizationUpdateDTO,
     actor: OrganizationActorContext,
   ): Promise<IOrganizationResponseDTO> {
-    const payload = organizationUpdateSchema.parse(input);
+    const normalizedInput = normalizeOrganizationUpdateInput(input);
+    const payload = organizationUpdateSchema.parse(normalizedInput);
     const fieldNames = Object.keys(payload);
     const policy = canUpdateOrganization(actor.privilege, fieldNames);
 
@@ -119,6 +126,11 @@ export class OrganizationCommandService {
       throw new Error("Insufficient privilege to update organization");
     }
 
+    const current = await organizationRepository.findById(id);
+    if (!current) {
+      throw new Error("Organization not found");
+    }
+
     const updatePayload = mapOrganizationUpdateToPersistence(payload, {
       updatedBy: actor.accountId,
     });
@@ -129,10 +141,13 @@ export class OrganizationCommandService {
     }
 
     const response = mapOrganizationToResponse(updated);
+    const before = mapOrganizationToResponse(current);
+    const changes = buildOrganizationChangeSet(before, response);
 
     organizationEvents.emit(OrganizationEventName.UPDATED, {
       context: this.createEventContext(actor),
-      organization: response,
+      organization: maskSensitiveOrganizationData(response),
+      changes,
     });
 
     return response;
@@ -158,7 +173,7 @@ export class OrganizationCommandService {
 
     organizationEvents.emit(OrganizationEventName.SOFT_DELETED, {
       context: this.createEventContext(actor),
-      organization: response,
+      organization: maskSensitiveOrganizationData(response),
     });
 
     return response;
@@ -184,7 +199,7 @@ export class OrganizationCommandService {
 
     organizationEvents.emit(OrganizationEventName.RESTORED, {
       context: this.createEventContext(actor),
-      organization: response,
+      organization: maskSensitiveOrganizationData(response),
     });
 
     return response;

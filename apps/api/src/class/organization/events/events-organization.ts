@@ -1,5 +1,6 @@
 import { EventEmitter } from "node:events";
 import { IOrganizationResponseDTO } from "../interfaces";
+import { OrganizationChangeSetItem } from "../utils";
 
 export enum OrganizationEventName {
   CREATED = "organization.created",
@@ -23,6 +24,7 @@ export interface OrganizationCreatedEvent {
 export interface OrganizationUpdatedEvent {
   context: OrganizationEventContext;
   organization: IOrganizationResponseDTO;
+  changes: OrganizationChangeSetItem[];
 }
 
 export interface OrganizationSoftDeletedEvent {
