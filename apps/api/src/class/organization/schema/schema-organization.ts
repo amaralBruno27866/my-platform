@@ -20,6 +20,12 @@ const NAME_LOWERCASE_PARTICLES = new Set([
   "to",
 ]);
 
+function getNumericEnumValues(source: object): number[] {
+  return Object.values(source).filter(
+    (value): value is number => typeof value === "number",
+  );
+}
+
 function toTitleCaseWithParticles(value: string): string {
   return value
     .trim()
@@ -125,7 +131,7 @@ export const organizationSchema = new Schema<IOrganizationInternal>(
     },
     organizationStatus: {
       type: Number,
-      enum: Object.values(OrganizationSttus),
+      enum: getNumericEnumValues(OrganizationSttus),
       default: ORGANIZATION_DEFAULTS.status,
       required: true,
       index: true,
@@ -151,13 +157,13 @@ export const organizationSchema = new Schema<IOrganizationInternal>(
     },
     privilege: {
       type: Number,
-      enum: Object.values(Privilege),
+      enum: getNumericEnumValues(Privilege),
       default: ORGANIZATION_DEFAULTS.privilege,
       required: true,
     },
     accessModifier: {
       type: Number,
-      enum: Object.values(AccessModifier),
+      enum: getNumericEnumValues(AccessModifier),
       default: ORGANIZATION_DEFAULTS.accessModifier,
       required: true,
     },

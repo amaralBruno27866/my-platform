@@ -4,7 +4,7 @@ import { OrganizationModel } from "../schema";
 
 type OrganizationQueryFilter = {
   _id?: Types.ObjectId | { $in: Types.ObjectId[] };
-  organizationId?: Types.ObjectId;
+  organizationId?: Types.ObjectId | { $in: Types.ObjectId[] };
   organizationPublicId?: string;
   slug?: string;
   deletedAt?: Date | null | { $ne: null };
@@ -52,7 +52,7 @@ export class OrganizationRepository {
     }
 
     if (!filterInput.applyToAll && filterInput.organizationIds?.length) {
-      filter._id = {
+      filter.organizationId = {
         $in: filterInput.organizationIds.map((id) => new Types.ObjectId(id)),
       };
     }
@@ -72,7 +72,7 @@ export class OrganizationRepository {
     includeDeleted = false,
   ): Promise<IOrganizationInternal | null> {
     const filter: OrganizationQueryFilter = {
-      _id: typeof id === "string" ? new Types.ObjectId(id) : id,
+      organizationId: typeof id === "string" ? new Types.ObjectId(id) : id,
     };
 
     if (!includeDeleted) {
@@ -173,7 +173,7 @@ export class OrganizationRepository {
   ): Promise<IOrganizationInternal | null> {
     return OrganizationModel.findOneAndUpdate(
       {
-        _id: typeof id === "string" ? new Types.ObjectId(id) : id,
+        organizationId: typeof id === "string" ? new Types.ObjectId(id) : id,
         deletedAt: null,
       },
       { $set: payload },
@@ -187,7 +187,7 @@ export class OrganizationRepository {
   ): Promise<IOrganizationInternal | null> {
     return OrganizationModel.findOneAndUpdate(
       {
-        _id: typeof id === "string" ? new Types.ObjectId(id) : id,
+        organizationId: typeof id === "string" ? new Types.ObjectId(id) : id,
         deletedAt: null,
       },
       {
@@ -213,7 +213,7 @@ export class OrganizationRepository {
   ): Promise<IOrganizationInternal | null> {
     return OrganizationModel.findOneAndUpdate(
       {
-        _id: typeof id === "string" ? new Types.ObjectId(id) : id,
+        organizationId: typeof id === "string" ? new Types.ObjectId(id) : id,
         deletedAt: { $ne: null },
       },
       {

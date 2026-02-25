@@ -125,15 +125,15 @@ organizationRouter.patch("/:id", async (req: Request, res: Response) => {
   }
 });
 
-organizationRouter.delete("/:id", async (req: Request, res: Response) => {
+organizationRouter.delete("/bulk", async (req: Request, res: Response) => {
   try {
     const actor = parseActorContext(req);
-    const deleted = await organizationCommandService.softDeleteOrganization(
-      getPathParam(req, "id"),
+    const result = await organizationCommandService.bulkSoftDeleteOrganizations(
+      req.body,
       actor,
     );
 
-    res.status(HttpStatus.OK).json(deleted);
+    res.status(HttpStatus.OK).json(result);
   } catch (error) {
     handleControllerError(error, res);
   }
@@ -171,15 +171,15 @@ organizationRouter.patch(
   },
 );
 
-organizationRouter.delete("/bulk", async (req: Request, res: Response) => {
+organizationRouter.delete("/:id", async (req: Request, res: Response) => {
   try {
     const actor = parseActorContext(req);
-    const result = await organizationCommandService.bulkSoftDeleteOrganizations(
-      req.body,
+    const deleted = await organizationCommandService.softDeleteOrganization(
+      getPathParam(req, "id"),
       actor,
     );
 
-    res.status(HttpStatus.OK).json(result);
+    res.status(HttpStatus.OK).json(deleted);
   } catch (error) {
     handleControllerError(error, res);
   }
