@@ -55,7 +55,7 @@ export * from "./mappers";
 // ========================================
 // REPOSITORIES
 // ========================================
-// export * from "./repositories";
+export * from "./repositories";
 
 // ========================================
 // RULES
