@@ -106,6 +106,46 @@ Coverage is protected by gate in `apps/api/vitest.config.ts`:
 
 If coverage falls below any threshold, CI fails.
 
+## Coverage snapshot (latest)
+
+Reference command used:
+
+```bash
+npm run test:api:coverage
+```
+
+Latest captured summary:
+
+| File / Group | % Stmts | % Branch | % Funcs | % Lines |
+|---|---:|---:|---:|---:|
+| All files | 95.50 | 79.75 | 97.19 | 95.43 |
+| src/app.ts | 100.00 | 100.00 | 100.00 | 100.00 |
+| organization/constants | 100.00 | 100.00 | 100.00 | 100.00 |
+| organization/controller/controller-organization.ts | 91.30 | 66.66 | 100.00 | 91.30 |
+| organization/enums/status.enum.ts | 100.00 | 100.00 | 100.00 | 100.00 |
+| organization/errors/http-status.ts | 100.00 | 100.00 | 100.00 | 100.00 |
+| organization/errors/organization-errors.ts | 93.75 | 92.30 | 90.00 | 93.54 |
+| organization/events/events-organization.ts | 100.00 | 100.00 | 100.00 | 100.00 |
+| organization/mappers/mappers-organization.ts | 94.73 | 76.47 | 100.00 | 94.73 |
+| organization/modules/modules-organization.ts | 100.00 | 100.00 | 100.00 | 100.00 |
+| organization/repositories/repositories-organization.ts | 97.87 | 82.35 | 100.00 | 97.87 |
+| organization/rules/rules-organization.ts | 100.00 | 87.50 | 100.00 | 100.00 |
+| organization/schema/schema-organization.ts | 85.71 | 83.33 | 80.00 | 85.71 |
+| organization/services/services-organization-command.ts | 93.54 | 75.00 | 100.00 | 93.54 |
+| organization/services/services-organization-lookup.ts | 100.00 | 87.50 | 100.00 | 100.00 |
+| organization/utils/utils-organization.ts | 100.00 | 73.07 | 100.00 | 100.00 |
+| organization/validators/validators-organization.ts | 91.17 | 77.77 | 90.90 | 91.17 |
+| common/enums/access-modifier.enum.ts | 100.00 | 100.00 | 100.00 | 100.00 |
+| common/enums/privilege.enum.ts | 100.00 | 100.00 | 100.00 | 100.00 |
+| config/env.ts | 88.88 | 50.00 | 100.00 | 87.50 |
+| config/mongo.ts | 100.00 | 100.00 | 100.00 | 100.00 |
+| docs/openapi.ts | 100.00 | 100.00 | 100.00 | 100.00 |
+| tests/mongo-memory.ts | 92.85 | 50.00 | 100.00 | 92.85 |
+
+Maintenance note:
+- This table is a snapshot and should be updated when coverage materially changes.
+- CI threshold gate is the source of truth for acceptance.
+
 ## CI behavior
 
 Workflow: `.github/workflows/api-ci.yml`
