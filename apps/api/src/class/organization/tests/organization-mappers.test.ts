@@ -7,7 +7,7 @@ import {
   mapOrganizationUpdateToPersistence,
 } from "../mappers";
 import { OrganizationSttus } from "../enums";
-import { OrganizationModel } from "../schema";
+import { OrganizationModel } from "../schemas";
 
 describe("organization mappers", () => {
   it("maps create dto to persistence payload", () => {

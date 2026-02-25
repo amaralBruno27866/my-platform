@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { IOrganizationInternal } from "../interfaces";
-import { OrganizationModel } from "../schema";
+import { OrganizationModel } from "../schemas";
 
 type OrganizationQueryFilter = {
   _id?: Types.ObjectId | { $in: Types.ObjectId[] };

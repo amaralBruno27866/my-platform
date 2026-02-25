@@ -1,5 +1,5 @@
 import { Express } from "express";
-import { organizationRouter } from "../controller";
+import { organizationRouter } from "../controllers";
 
 export const ORGANIZATION_MODULE_BASE_PATH = "/private/organizations";
 
