@@ -1,5 +1,6 @@
 import express from "express";
 import swaggerUi from "swagger-ui-express";
+import { getMongoConnectionState } from "./config/mongo";
 import { openApiDocument } from "./docs/openapi";
 
 export const app = express();
@@ -13,6 +14,7 @@ app.get("/", (_req, res) => {
 app.get("/health", (_req, res) => {
   res.status(200).json({
     status: "ok",
+    mongo: getMongoConnectionState(),
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });

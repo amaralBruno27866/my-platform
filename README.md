@@ -16,7 +16,6 @@ Initial repository setup for a MEAN project with:
 ## 2) Prepare the environment
 
 ```bash
-cp .env.example .env
 npm install
 npm run dev:infra
 npm run health:infra
@@ -61,7 +60,7 @@ npm run down:infra
 │  │  └─ package.json
 │  └─ web/
 │     └─ package.json
-├─ .env.example
+├─ .env
 ├─ .gitignore
 ├─ .nvmrc
 ├─ docker-compose.yml
