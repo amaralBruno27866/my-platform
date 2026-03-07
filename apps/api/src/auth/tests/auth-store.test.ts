@@ -124,4 +124,36 @@ describe("auth store", () => {
       "Account not found",
     );
   });
+
+  it("uses fail-open strategy when Redis is unavailable (returns true)", async () => {
+    // This test documents the current behavior: when Redis fails to return session data,
+    // ensureTokenIsActive returns true (fail-open) for availability over security.
+    // This is intentional for development but should be reviewed for production.
+    vi.spyOn(redisCacheService, "getJson").mockResolvedValue(null);
+
+    const isActive = await authStore.ensureTokenIsActive(
+      "any-token",
+      "any-account-id",
+    );
+
+    expect(isActive).toBe(true);
+  });
+
+  it("validates session matches account ID when Redis is available", async () => {
+    vi.spyOn(redisCacheService, "getJson").mockResolvedValue({
+      accountId: "correct-account",
+    });
+
+    const validSession = await authStore.ensureTokenIsActive(
+      "token-1",
+      "correct-account",
+    );
+    expect(validSession).toBe(true);
+
+    const mismatchSession = await authStore.ensureTokenIsActive(
+      "token-1",
+      "wrong-account",
+    );
+    expect(mismatchSession).toBe(false);
+  });
 });
