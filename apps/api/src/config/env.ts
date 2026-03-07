@@ -22,7 +22,16 @@ if (!mongoUri) {
   throw new Error("MONGO_URI is required");
 }
 
-const authJwtSecret = process.env.AUTH_JWT_SECRET ?? "dev-only-change-me";
+const authJwtSecret = process.env.AUTH_JWT_SECRET?.trim();
+
+if (!authJwtSecret) {
+  throw new Error("AUTH_JWT_SECRET is required");
+}
+
+if (authJwtSecret.length < 32) {
+  throw new Error("AUTH_JWT_SECRET must be at least 32 characters long");
+}
+
 const authJwtExpiresIn = process.env.AUTH_JWT_EXPIRES_IN ?? "15m";
 const redisEnabled =
   process.env.REDIS_ENABLED !== undefined
