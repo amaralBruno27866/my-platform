@@ -1,5 +1,6 @@
 import { ZodError } from "zod";
 import { HttpStatus } from "./http-status";
+import { AppError } from "../../../error-handling/errors";
 
 export enum OrganizationErrorCode {
   BAD_REQUEST = "ORGANIZATION_BAD_REQUEST",
@@ -10,22 +11,18 @@ export enum OrganizationErrorCode {
   INTERNAL = "ORGANIZATION_INTERNAL",
 }
 
-export class OrganizationAppError extends Error {
-  readonly statusCode: HttpStatus;
+export class OrganizationAppError extends AppError {
   readonly code: OrganizationErrorCode;
-  readonly details?: unknown;
 
   constructor(
     message: string,
-    statusCode: HttpStatus,
+    public readonly statusCode: HttpStatus,
     code: OrganizationErrorCode,
     details?: unknown,
   ) {
-    super(message);
+    super(message, details);
     this.name = this.constructor.name;
-    this.statusCode = statusCode;
     this.code = code;
-    this.details = details;
   }
 }
 

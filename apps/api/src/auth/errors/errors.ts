@@ -1,13 +1,14 @@
 import { AuthErrorCode } from "../contracts";
+import { AppError } from "../../error-handling/errors";
 
-export class AuthAppError extends Error {
+export class AuthAppError extends AppError {
   constructor(
     public readonly statusCode: number,
     public readonly code: AuthErrorCode,
     message: string,
-    public readonly details?: unknown,
+    details?: unknown,
   ) {
-    super(message);
+    super(message, details);
     this.name = "AuthAppError";
   }
 }

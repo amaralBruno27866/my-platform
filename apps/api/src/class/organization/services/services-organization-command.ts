@@ -16,11 +16,11 @@ import {
 import { organizationCacheService } from "./services-organization-cache";
 import { canPerformOrganizationAction, canUpdateOrganization } from "../rules";
 import {
-  organizationBulkSoftDeleteSchema,
-  organizationBulkUpdateStatusSchema,
-  organizationCreateSchema,
-  organizationUpdateSchema,
-} from "../validators";
+  validateOrganizationCreate,
+  validateOrganizationUpdate,
+  validateOrganizationBulkUpdateStatus,
+  validateOrganizationBulkSoftDelete,
+} from "../validators/validation-helper";
 import {
   IOrganizationCreateDTO,
   IOrganizationResponseDTO,
@@ -39,6 +39,7 @@ import {
   normalizeOrganizationCreateInput,
   normalizeOrganizationUpdateInput,
 } from "../utils";
+import { toOrganizationAppError } from "../errors/organization-errors";
 
 export interface OrganizationActorContext {
   accountId: string;
@@ -95,7 +96,7 @@ export class OrganizationCommandService {
     }
 
     const normalizedInput = normalizeOrganizationCreateInput(input);
-    const payload = organizationCreateSchema.parse(normalizedInput);
+    const payload = validateOrganizationCreate(normalizedInput);
 
     const organizationPublicId = await this.generateOrganizationPublicId();
     const createPayload = mapOrganizationCreateToPersistence(payload, {
@@ -103,7 +104,12 @@ export class OrganizationCommandService {
       organizationPublicId,
     });
 
-    const created = await organizationRepository.create(createPayload);
+    let created;
+    try {
+      created = await organizationRepository.create(createPayload);
+    } catch (error) {
+      throw toOrganizationAppError(error);
+    }
     const response = mapOrganizationToResponse(created);
 
     await organizationCacheService.setById(response.organizationId, response);
@@ -124,7 +130,7 @@ export class OrganizationCommandService {
     actor: OrganizationActorContext,
   ): Promise<IOrganizationResponseDTO> {
     const normalizedInput = normalizeOrganizationUpdateInput(input);
-    const payload = organizationUpdateSchema.parse(normalizedInput);
+    const payload = validateOrganizationUpdate(normalizedInput);
     const fieldNames = Object.keys(payload);
     const policy = canUpdateOrganization(actor.privilege, fieldNames);
 
@@ -251,7 +257,7 @@ export class OrganizationCommandService {
       );
     }
 
-    const payload = organizationBulkUpdateStatusSchema.parse(input);
+    const payload = validateOrganizationBulkUpdateStatus(input);
     const result = await organizationRepository.bulkUpdateStatus(
       {
         applyToAll: payload.applyToAll,
@@ -283,7 +289,7 @@ export class OrganizationCommandService {
       );
     }
 
-    const payload = organizationBulkSoftDeleteSchema.parse(input);
+    const payload = validateOrganizationBulkSoftDelete(input);
     const result = await organizationRepository.bulkSoftDelete(
       {
         applyToAll: payload.applyToAll,

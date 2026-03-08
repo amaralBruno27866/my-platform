@@ -3,6 +3,7 @@ import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { authRouter } from "../controllers";
 import { authStore } from "../store";
+import { globalErrorHandler } from "../../error-handling";
 
 function resetAuthStore(): void {
   const mutableStore = authStore as unknown as {
@@ -20,6 +21,7 @@ describe("auth http routes", () => {
   const app = express();
   app.use(express.json());
   app.use(authRouter);
+  app.use(globalErrorHandler);
 
   beforeEach(() => {
     resetAuthStore();
@@ -192,6 +194,14 @@ describe("auth http routes", () => {
       organizationId: "org-1",
     });
 
+    console.log("duplicate response status:", duplicate.status);
+    console.log("duplicate response headers:", duplicate.headers);
+    console.log("duplicate response type:", duplicate.type);
+    console.log(
+      "duplicate response body:",
+      JSON.stringify(duplicate.body, null, 2),
+    );
+    console.log("duplicate response text:", duplicate.text);
     expect(duplicate.status).toBe(409);
     expect(duplicate.body.code).toBe("AUTH_EMAIL_ALREADY_IN_USE");
   });

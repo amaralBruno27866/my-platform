@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { authUnauthorizedError, toAuthAppError } from "../errors";
+import { authUnauthorizedError } from "../errors";
 import { authStore } from "../store";
 import { verifyAccessToken } from "../token";
 
@@ -29,12 +29,5 @@ export function requireAuth(
 
     req.auth = payload;
     next();
-  })().catch((error) => {
-    const appError = toAuthAppError(error);
-    res.status(appError.statusCode).json({
-      message: appError.message,
-      code: appError.code,
-      details: appError.details,
-    });
-  });
+  })().catch(next); // ✅ NEW: Pass error to global handler via next()
 }

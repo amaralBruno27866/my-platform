@@ -2,7 +2,7 @@ import { Privilege } from "../../../common/enums";
 import { mapOrganizationToResponse } from "../mappers";
 import { organizationRepository } from "../repositories";
 import { canReadOrganization } from "../rules";
-import { organizationQuerySchema } from "../validators";
+import { validateOrganizationQuery } from "../validators/validation-helper";
 import { IOrganizationResponseDTO } from "../interfaces";
 import { organizationCacheService } from "./services-organization-cache";
 import {
@@ -89,7 +89,7 @@ export class OrganizationLookupService {
       return cached;
     }
 
-    const query = organizationQuerySchema.parse(queryInput ?? {});
+    const query = validateOrganizationQuery(queryInput ?? {});
     const result = await organizationRepository.list({
       page: query.page,
       limit: query.limit,
