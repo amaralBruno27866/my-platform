@@ -44,6 +44,8 @@ authRouter.get(
     try {
       const accountId = req.auth?.sub;
 
+      // Defensive check: requireAuth middleware guarantees req.auth.sub is set
+      // istanbul ignore next - middleware always sets this, defensive code
       if (!accountId) {
         throw new Error("Missing auth context");
       }

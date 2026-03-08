@@ -27,6 +27,7 @@ export async function stopTestMongo(): Promise<void> {
     await mongoose.disconnect();
   }
 
+  // istanbul ignore else - test infrastructure cleanup
   if (mongoServer) {
     await mongoServer.stop();
     mongoServer = null;

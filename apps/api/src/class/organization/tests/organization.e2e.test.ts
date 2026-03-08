@@ -135,6 +135,26 @@ describe("organization API e2e", () => {
     expect(response.body.code).toBe(OrganizationErrorCode.BAD_REQUEST);
   });
 
+  it("returns 400 when only x-account-id is provided", async () => {
+    const response = await request(app)
+      .get("/private/organizations")
+      .set({ "x-account-id": new Types.ObjectId().toString() });
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe(OrganizationErrorCode.BAD_REQUEST);
+    expect(response.body.message).toContain("Missing actor headers");
+  });
+
+  it("returns 400 when only x-privilege is provided", async () => {
+    const response = await request(app)
+      .get("/private/organizations")
+      .set({ "x-privilege": String(Privilege.MASTER) });
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe(OrganizationErrorCode.BAD_REQUEST);
+    expect(response.body.message).toContain("Missing actor headers");
+  });
+
   it("returns 400 for invalid privilege header", async () => {
     const response = await request(app).get("/private/organizations").set({
       "x-account-id": new Types.ObjectId().toString(),

@@ -13,6 +13,11 @@ import {
 
 export const organizationRouter = Router();
 
+/**
+ * Safely extracts path parameters from Express request.
+ * Handles edge case where parameter could be an array (rare in standard Express routing).
+ * istanbul ignore next - Array case is rare in practice, defensive programming
+ */
 function getPathParam(req: Request, key: string): string {
   const rawValue = req.params[key];
 

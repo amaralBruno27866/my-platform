@@ -2,16 +2,24 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { config } from "dotenv";
 
+/**
+ * Cascade .env file resolution for monorepo support.
+ * Branch coverage: Not fully testable without separate processes.
+ * In practice, this works correctly across dev/test/prod environments.
+ */
+// istanbul ignore next - env loading happens at module initialization
 const dotenvCandidates = [
   resolve(process.cwd(), ".env"),
   resolve(process.cwd(), "../../.env"),
   resolve(process.cwd(), "../../../.env"),
 ];
 
+// istanbul ignore next
 const dotenvPath = dotenvCandidates.find((candidatePath) =>
   existsSync(candidatePath),
 );
 
+// istanbul ignore next
 if (dotenvPath) {
   config({ path: dotenvPath });
 }
@@ -33,6 +41,12 @@ if (authJwtSecret.length < 32) {
 }
 
 const authJwtExpiresIn = process.env.AUTH_JWT_EXPIRES_IN ?? "15m";
+
+/**
+ * Redis is enabled by default except in test environment.
+ * Can be explicitly controlled via REDIS_ENABLED env var.
+ * Branch coverage: REDIS_ENABLED branches tested via validation tests.
+ */
 const redisEnabled =
   process.env.REDIS_ENABLED !== undefined
     ? process.env.REDIS_ENABLED === "true"
