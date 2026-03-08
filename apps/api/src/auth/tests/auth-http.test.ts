@@ -215,4 +215,13 @@ describe("auth http routes", () => {
     expect(badLogin.status).toBe(401);
     expect(badLogin.body.code).toBe("AUTH_INVALID_CREDENTIALS");
   });
+
+  it("handles token that is only whitespace after Bearer", async () => {
+    const onlySpaces = await request(app)
+      .get("/private/auth/me")
+      .set("authorization", "Bearer    ");
+
+    expect(onlySpaces.status).toBe(401);
+    expect(onlySpaces.body.code).toBe("AUTH_UNAUTHORIZED");
+  });
 });

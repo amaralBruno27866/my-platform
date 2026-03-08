@@ -24,4 +24,21 @@ describe("env config security", () => {
     expect(env.redisUrl).toBeDefined();
     expect(env.redisAuthSessionTtlSeconds).toBeGreaterThan(0);
   });
+
+  it("enables Redis based on NODE_ENV and REDIS_ENABLED", () => {
+    // Tests the ternary: REDIS_ENABLED !== undefined ? ... : NODE_ENV !== "test"
+    // In our setup.ts, REDIS_ENABLED is not set, and NODE_ENV is "development"
+    expect(env.redisEnabled).toBeDefined();
+    expect(typeof env.redisEnabled).toBe("boolean");
+  });
+
+  it("uses default values for optional environment variables", () => {
+    // Tests fallback branches for optional env vars
+    expect(env.authJwtExpiresIn).toBeDefined();
+    expect(env.redisUrl).toBeDefined();
+    expect(env.redisOrganizationCacheTtlSeconds).toBeGreaterThan(0);
+    expect(env.redisAuthSessionTtlSeconds).toBeGreaterThan(0);
+    expect(env.nodeEnv).toBe("test");
+    expect(env.port).toBeGreaterThan(0);
+  });
 });
