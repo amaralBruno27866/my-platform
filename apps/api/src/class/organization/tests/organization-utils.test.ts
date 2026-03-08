@@ -111,4 +111,46 @@ describe("organization utils", () => {
     expect(changes.map((item) => item.field)).toContain("organizationName");
     expect(changes.map((item) => item.field)).toContain("organizationStatus");
   });
+
+  it("formats organization name with particle as first word", () => {
+    expect(formatOrganizationName("of mice and men")).toBe("Of Mice and Men");
+  });
+
+  it("normalizes create input without optional fields", () => {
+    const create = normalizeOrganizationCreateInput({
+      organizationName: "acme",
+      legalName: "acme legal",
+      acronym: "ac",
+      organizationLogo: "https://example.com/logo.png",
+      organizationWebsite: "https://example.com",
+      representativeName: "john",
+      // No organizationEmail or organizationPhone
+    });
+
+    expect(create.organizationName).toBe("Acme");
+    expect(create.organizationEmail).toBeUndefined();
+    expect(create.organizationPhone).toBeUndefined();
+  });
+
+  it("normalizes update input with all undefined optional fields", () => {
+    const update = normalizeOrganizationUpdateInput({
+      // Empty update - should filter out undefined
+    });
+
+    const keys = Object.keys(update);
+    expect(keys).toHaveLength(0);
+  });
+
+  it("masks sensitive data when email and phone are undefined", () => {
+    const org = {
+      ...buildResponseDto(),
+      organizationEmail: undefined,
+      organizationPhone: undefined,
+    };
+
+    const masked = maskSensitiveOrganizationData(org);
+
+    expect(masked.organizationEmail).toBeUndefined();
+    expect(masked.organizationPhone).toBeUndefined();
+  });
 });
