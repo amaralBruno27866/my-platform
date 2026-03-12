@@ -194,14 +194,6 @@ describe("auth http routes", () => {
       organizationId: "org-1",
     });
 
-    console.log("duplicate response status:", duplicate.status);
-    console.log("duplicate response headers:", duplicate.headers);
-    console.log("duplicate response type:", duplicate.type);
-    console.log(
-      "duplicate response body:",
-      JSON.stringify(duplicate.body, null, 2),
-    );
-    console.log("duplicate response text:", duplicate.text);
     expect(duplicate.status).toBe(409);
     expect(duplicate.body.code).toBe("AUTH_EMAIL_ALREADY_IN_USE");
   });
