@@ -39,20 +39,28 @@ export const ORGANIZATION_IMMUTABLE_FIELDS = [
 ] as const;
 
 /**
- * Fields editable only by users with privilege level 4.
+ * Fields editable by privilege HIGH and MASTER.
  */
-export const ORGANIZATION_PRIVILEGE_4_EDITABLE_FIELDS = [
+export const ORGANIZATION_HIGH_EDITABLE_FIELDS = [
   "organizationName",
   "legalName",
   "acronym",
-  "slug",
   "organizationLogo",
   "organizationWebsite",
   "representativeName",
-  "representativeAccountId",
   "organizationEmail",
   "organizationAddress",
   "organizationPhone",
+] as const;
+
+/**
+ * Fields editable only by privilege MASTER.
+ */
+export const ORGANIZATION_MASTER_ONLY_EDITABLE_FIELDS = [
+  "representativeAccountId",
+  "organizationStatus",
+  "privilege",
+  "accessModifier",
 ] as const;
 
 /**

@@ -35,6 +35,7 @@ import {
 import {
   buildOrganizationChangeSet,
   buildOrganizationPublicId,
+  generateOrganizationSlug,
   maskSensitiveOrganizationData,
   normalizeOrganizationCreateInput,
   normalizeOrganizationUpdateInput,
@@ -151,9 +152,20 @@ export class OrganizationCommandService {
       throw new OrganizationNotFoundError("Organization not found");
     }
 
-    const updatePayload = mapOrganizationUpdateToPersistence(payload, {
-      updatedBy: actor.accountId,
-    });
+    // Auto-calculate slug if organizationName is being updated
+    const updatePayloadWithSlug = {
+      ...payload,
+      ...(payload.organizationName && {
+        slug: generateOrganizationSlug(payload.organizationName),
+      }),
+    };
+
+    const updatePayload = mapOrganizationUpdateToPersistence(
+      updatePayloadWithSlug,
+      {
+        updatedBy: actor.accountId,
+      },
+    );
 
     const updated = await organizationRepository.updateById(id, updatePayload);
     if (!updated) {
@@ -251,9 +263,10 @@ export class OrganizationCommandService {
     input: OrganizationBulkUpdateStatusRequest,
     actor: OrganizationActorContext,
   ): Promise<OrganizationBulkOperationResult> {
-    if (!canPerformOrganizationAction(actor.privilege, "update")) {
+    // organizationStatus is MASTER-only, not just "update"
+    if (actor.privilege !== Privilege.MASTER) {
       throw new OrganizationForbiddenError(
-        "Insufficient privilege to bulk update organization",
+        "Insufficient privilege to bulk update organization status",
       );
     }
 

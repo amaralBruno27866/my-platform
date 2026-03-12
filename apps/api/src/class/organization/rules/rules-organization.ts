@@ -1,7 +1,8 @@
 import { AccessModifier, Privilege } from "../../../common/enums";
 import {
   ORGANIZATION_IMMUTABLE_FIELDS,
-  ORGANIZATION_PRIVILEGE_4_EDITABLE_FIELDS,
+  ORGANIZATION_HIGH_EDITABLE_FIELDS,
+  ORGANIZATION_MASTER_ONLY_EDITABLE_FIELDS,
 } from "../constants";
 
 export type OrganizationCrudAction =
@@ -13,8 +14,10 @@ export type OrganizationCrudAction =
   | "restore";
 
 /**
- * Organization policy matrix derived from docs/CRUD-matrix.csv.
- * For this entity, only MASTER privilege can execute CRUD operations.
+ * Organization policy matrix derived from docs/Organization-Schema.csv.
+ * MASTER: full CRUD access.
+ * HIGH: read & update (field-level restrictions apply).
+ * MEDIUM, LOW: no access.
  */
 const ORGANIZATION_CRUD_POLICY: Record<
   Privilege,
@@ -38,8 +41,8 @@ const ORGANIZATION_CRUD_POLICY: Record<
   },
   [Privilege.HIGH]: {
     create: false,
-    read: false,
-    update: false,
+    read: true,
+    update: true,
     softDelete: false,
     delete: false,
     restore: false,
@@ -75,31 +78,38 @@ export function canReadOrganization(
 }
 
 /**
- * Verifies if a single field is editable for privilege 4 users.
+ * Verifies if provided update fields are allowed based on privilege level.
  */
-export function canEditOrganizationField(fieldName: string): boolean {
-  return ORGANIZATION_PRIVILEGE_4_EDITABLE_FIELDS.includes(
-    fieldName as (typeof ORGANIZATION_PRIVILEGE_4_EDITABLE_FIELDS)[number],
-  );
-}
-
-/**
- * Verifies if provided update fields are all allowed by organization policy.
- */
-export function validateOrganizationUpdateFields(fieldNames: string[]): {
+export function validateOrganizationUpdateFields(
+  privilege: Privilege,
+  fieldNames: string[],
+): {
   isValid: boolean;
   forbiddenFields: string[];
 } {
   const forbiddenFields = fieldNames.filter((fieldName) => {
+    // Immutable fields can never be edited
     const isImmutable = ORGANIZATION_IMMUTABLE_FIELDS.includes(
       fieldName as (typeof ORGANIZATION_IMMUTABLE_FIELDS)[number],
     );
-
     if (isImmutable) {
       return true;
     }
 
-    return !canEditOrganizationField(fieldName);
+    // MASTER can edit all fields
+    if (privilege === Privilege.MASTER) {
+      return false;
+    }
+
+    // HIGH can only edit HIGH_EDITABLE fields (not MASTER_ONLY)
+    if (privilege === Privilege.HIGH) {
+      return !ORGANIZATION_HIGH_EDITABLE_FIELDS.includes(
+        fieldName as (typeof ORGANIZATION_HIGH_EDITABLE_FIELDS)[number],
+      );
+    }
+
+    // Other privileges cannot edit
+    return true;
   });
 
   return {
@@ -126,7 +136,10 @@ export function canUpdateOrganization(
     };
   }
 
-  const fieldValidation = validateOrganizationUpdateFields(fieldNames);
+  const fieldValidation = validateOrganizationUpdateFields(
+    privilege,
+    fieldNames,
+  );
   if (!fieldValidation.isValid) {
     return {
       allowed: false,

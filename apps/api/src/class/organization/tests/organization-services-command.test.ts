@@ -8,6 +8,7 @@ import {
 } from "../../../tests/mongo-memory";
 import { OrganizationSttus } from "../enums";
 import {
+  OrganizationBadRequestError,
   OrganizationForbiddenError,
   OrganizationNotFoundError,
 } from "../errors";
@@ -110,16 +111,39 @@ describe("organization command service", () => {
   });
 
   it("rejects restricted operations for non-master users", async () => {
-    const id = new Types.ObjectId().toString();
+    // Create org with MASTER
+    const created = await organizationCommandService.createOrganization(
+      buildCreatePayload("Restricted"),
+      buildActor(Privilege.MASTER),
+    );
+    const id = created.organizationId;
 
+    // HIGH can update HIGH_EDITABLE fields
+    const updated = await organizationCommandService.updateOrganization(
+      id,
+      { acronym: "RES" },
+      buildActor(Privilege.HIGH),
+    );
+    expect(updated.acronym).toBe("RES");
+
+    // HIGH cannot update MASTER_ONLY fields
     await expect(
       organizationCommandService.updateOrganization(
         id,
-        { organizationName: "Denied" },
+        { organizationStatus: OrganizationSttus.SUSPENDED },
+        buildActor(Privilege.HIGH),
+      ),
+    ).rejects.toBeInstanceOf(OrganizationBadRequestError);
+
+    // HIGH cannot create
+    await expect(
+      organizationCommandService.createOrganization(
+        buildCreatePayload("Create"),
         buildActor(Privilege.HIGH),
       ),
     ).rejects.toBeInstanceOf(OrganizationForbiddenError);
 
+    // HIGH cannot bulk update status
     await expect(
       organizationCommandService.bulkUpdateOrganizationStatus(
         {
@@ -130,6 +154,7 @@ describe("organization command service", () => {
       ),
     ).rejects.toBeInstanceOf(OrganizationForbiddenError);
 
+    // HIGH cannot bulk soft delete
     await expect(
       organizationCommandService.bulkSoftDeleteOrganizations(
         {

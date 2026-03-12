@@ -2,7 +2,8 @@ import { z } from "zod";
 import { AccessModifier, Privilege } from "../../../common/enums";
 import {
   ORGANIZATION_IMMUTABLE_FIELDS,
-  ORGANIZATION_PRIVILEGE_4_EDITABLE_FIELDS,
+  ORGANIZATION_HIGH_EDITABLE_FIELDS,
+  ORGANIZATION_MASTER_ONLY_EDITABLE_FIELDS,
 } from "../constants";
 import { OrganizationSttus } from "../enums";
 
@@ -57,7 +58,8 @@ export const organizationCreateSchema = z
   .strict();
 
 const editableFieldNames = new Set<string>([
-  ...ORGANIZATION_PRIVILEGE_4_EDITABLE_FIELDS,
+  ...ORGANIZATION_HIGH_EDITABLE_FIELDS,
+  ...ORGANIZATION_MASTER_ONLY_EDITABLE_FIELDS,
 ]);
 
 /**
@@ -74,14 +76,6 @@ export const organizationUpdateSchema = z
       .min(2)
       .max(12)
       .transform((value) => value.toUpperCase())
-      .optional(),
-    slug: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .regex(slugPattern, "Invalid slug format")
-      .min(3)
-      .max(120)
       .optional(),
     organizationLogo: z.string().trim().url().optional(),
     organizationWebsite: z.string().trim().url().optional(),

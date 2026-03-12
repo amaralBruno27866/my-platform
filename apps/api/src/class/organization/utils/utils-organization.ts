@@ -100,6 +100,16 @@ export function normalizeOrganizationUpdateInput(
   ) as IOrganizationUpdateDTO;
 }
 
+export function generateOrganizationSlug(organizationName: string): string {
+  return organizationName
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 export function buildOrganizationPublicId(
   sequence: number,
   options: {

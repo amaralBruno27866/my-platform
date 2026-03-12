@@ -12,7 +12,6 @@ export interface IOrganizationUpdateDTO {
   organizationName?: string;
   legalName?: string;
   acronym?: string;
-  slug?: string;
   organizationLogo?: string;
   organizationWebsite?: string;
   representativeName?: string;

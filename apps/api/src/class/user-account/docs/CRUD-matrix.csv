@@ -1,6 +1,0 @@
-Privilege,Create,Read,Update,Soft Delete,Delete
-UNAUTHENTICATED,Public signup only (new self account),No,No,No,No
-LOW,No,Only your own data,Only your own data,Only your own data,No
-MEDIUM,No,Same organization,Same organization,Same organization,No
-HIGH,No,Same organization,Same organization,Same organization,No
-MASTER,No,All organizations,All organizations,All organizations,Only by privilege 4
