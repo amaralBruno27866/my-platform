@@ -5,6 +5,15 @@ import { authRouter } from "../controllers";
 import { authStore } from "../store";
 import { globalErrorHandler } from "../../error-handling";
 
+vi.mock("../../logging", () => ({
+  logger: {
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
+
 function resetAuthStore(): void {
   const mutableStore = authStore as unknown as {
     sequence: number;
