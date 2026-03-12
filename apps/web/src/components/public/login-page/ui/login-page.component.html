@@ -1,0 +1,46 @@
+<section class="login-page">
+  <div class="login-card">
+    <header class="login-header">
+      <h1>Entrar</h1>
+      <p>Acesse sua conta para continuar.</p>
+    </header>
+
+    <p class="status" *ngIf="loading()">Carregando sessão...</p>
+
+    <p class="status status-success" *ngIf="successMessage()">
+      {{ successMessage() }}
+    </p>
+
+    <p class="status status-error" *ngIf="error()">
+      {{ error() }}
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!isAuthenticated()">
+      <label>
+        E-mail
+        <input type="email" formControlName="email" placeholder="voce@empresa.com" />
+      </label>
+
+      <label>
+        Senha
+        <input type="password" formControlName="password" placeholder="********" />
+      </label>
+
+      <label class="checkbox">
+        <input type="checkbox" formControlName="rememberMe" />
+        Lembrar sessão
+      </label>
+
+      <button type="submit" [disabled]="submitting()">
+        {{ submitting() ? "Entrando..." : "Entrar" }}
+      </button>
+    </form>
+
+    <div class="authenticated" *ngIf="isAuthenticated()">
+      <p>Você está autenticado.</p>
+      <button type="button" (click)="onLogout()" [disabled]="submitting()">
+        {{ submitting() ? "Saindo..." : "Sair" }}
+      </button>
+    </div>
+  </div>
+</section>

@@ -14,6 +14,7 @@ Implement login UX now (validate input, submit, loading/error/session state) and
 - `state/`: simple state container for loading/error/session flow.
 - `pages/`: page-level orchestration functions.
 - `components/`: UI model contracts (framework-agnostic placeholders).
+- `ui/`: Angular standalone visual component (`LoginPageComponent`).
 - `validators/`: local validation helpers.
 - `tests/`: service/state/pages/components/validators/barrels tests.
 

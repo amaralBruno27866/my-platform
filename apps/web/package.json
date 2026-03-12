@@ -5,5 +5,10 @@
   "scripts": {
     "start": "echo 'Frontend ainda não inicializado. Próximo passo: criar projeto Angular em apps/web'",
     "build": "echo 'Build não configurado ainda'"
+  },
+  "dependencies": {
+    "@angular/common": "^21.2.3",
+    "@angular/core": "^21.2.3",
+    "@angular/forms": "^21.2.3"
   }
 }
