@@ -1,34 +1,34 @@
-Field name,Type,Required ?,Nullabel ?,Default value,Index type,Enum,Validation rule,Normalization,Unique ?,Reference to,Referenced schema,Calculated ?,Example value,Sensitive ?,Hashed ?,Indexed ?,Query usage,Immutable,Can be edit?
-Account-id,Object ID,TRUE,Not NULL,,Single field,,Strict,1NF,TRUE,,,TRUE,,FALSE,FALSE,TRUE,Search,TRUE,No
-Account-public-id,String,TRUE,Not NULL,,Single field,,Strict,1NF,TRUE,,,,ACC-0000001,FALSE,FALSE,TRUE,Search,TRUE,No
-First-name,String,TRUE,Not NULL,,Text,,Moderate,1NF,FALSE,,,,Jhon,TRUE,FALSE,TRUE,Search,FALSE,Only your own data
-Last-name,String,TRUE,Not NULL,,Text,,Moderate,1NF,FALSE,,,,Sminth,TRUE,FALSE,TRUE,Search,FALSE,Only your own data
-Email,String,TRUE,Not NULL,,Text,,Strict,3NF,TRUE,,,,myemail@mail.com,TRUE,FALSE,TRUE,Search,FALSE,Only your own data
-Cellphone,String,FALSE,Optional,,Text,,Moderate,1NF,FALSE,,,,(XXX) XXX-XXXX,TRUE,FALSE,TRUE,Search,FALSE,Only your own data
-Password,String,TRUE,Not NULL,,Hashed,,Strict,3NF,FALSE,,,,,TRUE,TRUE,FALSE,None,FALSE,Only your own data
-Account-Status,Int32,TRUE,Not NULL,2,Single field,account-status.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,With privilege 3 or 4
-Acceptance-Term,Boolean,TRUE,Not NULL,,Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,TRUE,Only by privilege 4
-Account-group,Int32,TRUE,Not NULL,,Single field,account-group.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,TRUE,With privilege 3 or 4
-Organization,Object ID,TRUE,Not NULL,,Single field,,Strict,1NF,FALSE,Lookup,organization,,,FALSE,FALSE,TRUE,Search,TRUE,No
-CreatedAt,Date,TRUE,Not NULL,auto (mongoose timestamps),Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,No
-UpdatedAt,Date,FALSE,Optional,auto (mongoose timestamps),Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,No
-DeletedAt,Date,FALSE,Optional,,Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,No
-CreatedBy,Object ID,FALSE,Optional,auto (actor accountId or self on public signup),Single field,,Strict,1NF,FALSE,Lookup,user-account,,,FALSE,FALSE,TRUE,Filter,TRUE,No
-UpdatedBy,Object ID,FALSE,Optional,,Single field,,Strict,1NF,FALSE,Lookup,user-account,,,FALSE,FALSE,FALSE,Filter,FALSE,No
-Privilege,Int32,TRUE,Not NULL,1,Single field,privilege.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,None,FALSE,Only by privilege 4
-Access-modifier,Int32,TRUE,Not NULL,3,Single field,access-modifier.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,None,FALSE,Only by privilege 4
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-Collection name,user-account,,,,,,,,,,,,,,,,,,
-Business name,User-Account,,,,,,,,,,,,,,,,,,
-Description,"The User-Account entity is used to store basic user data, which will allow the user to access their dashboard and manage their personal information.",,,,,,,,,,,,,,,,,,
-Owner/Module,user-account,,,,,,,,,,,,,,,,,,
-Primary use case,CRUD,,,,,,,,,,,,,,,,,,
-Relationship summary,"A User Account connects to an organization in a relationship where an Organization can have ""n"" user accounts, but a user account can only have one organization.",,,,,,,,,,,,,,,,,,
-Cardinality summary,N:1,,,,,,,,,,,,,,,,,,
-Indexes,,,,,,,,,,,,,,,,,,,
-Audit enable,Enabled,,,,,,,,,,,,,,,,,,
-API level,Private (except public signup),,,,,,,,,,,,,,,,,,
-PII level,Sensitive,,,,,,,,,,,,,,,,,,
-Relation policy,Cascade,,,,,,,,,,,,,,,,,,
-Migration notes,,,,,,,,,,,,,,,,,,,
+Field name,Type,Required ?,Nullabel ?,Default value,Index type,Enum,Validation rule,Normalization,Unique ?,Reference to,Referenced schema,Calculated ?,Example value,Sensitive ?,Hashed ?,Indexed ?,Query usage,Immutable,Create,Read,Update,Delete
+Account-id,Object ID,TRUE,Not NULL,,Single field,,Strict,1NF,TRUE,,,TRUE,,FALSE,FALSE,TRUE,Search,TRUE,N/A (system),"MEDIUM, HIGH, MASTER",N/A (unchangeable),"HIGH, MASTER"
+Account-public-id,String,TRUE,Not NULL,,Single field,,Strict,1NF,TRUE,,,,ACC-0000001,FALSE,FALSE,TRUE,Search,TRUE,N/A (system),"LOW, MEDIUM, HIGH, MASTER",N/A (unchangeable),"HIGH, MASTER"
+First-name,String,TRUE,Not NULL,,Text,,Moderate,1NF,FALSE,,,,Jhon,TRUE,FALSE,TRUE,Search,FALSE,UNAUTHENTICATED,"LOW, MEDIUM, HIGH, MASTER","LOW, MEDIUM, HIGH, MASTER","HIGH, MASTER"
+Last-name,String,TRUE,Not NULL,,Text,,Moderate,1NF,FALSE,,,,Sminth,TRUE,FALSE,TRUE,Search,FALSE,UNAUTHENTICATED,"LOW, MEDIUM, HIGH, MASTER","LOW, MEDIUM, HIGH, MASTER","HIGH, MASTER"
+Email,String,TRUE,Not NULL,,Text,,Strict,3NF,TRUE,,,,myemail@mail.com,TRUE,FALSE,TRUE,Search,FALSE,UNAUTHENTICATED,"LOW, MEDIUM, HIGH, MASTER","LOW, MEDIUM, HIGH, MASTER","HIGH, MASTER"
+Cellphone,String,FALSE,Optional,,Text,,Moderate,1NF,TRUE,,,,(XXX) XXX-XXXX,TRUE,FALSE,TRUE,Search,FALSE,UNAUTHENTICATED,"LOW, MEDIUM, HIGH, MASTER","LOW, MEDIUM, HIGH, MASTER","HIGH, MASTER"
+Password,String,TRUE,Not NULL,,Hashed,,Strict,3NF,FALSE,,,,,TRUE,TRUE,FALSE,None,FALSE,UNAUTHENTICATED,N/A (system),"LOW, MEDIUM, HIGH, MASTER","HIGH, MASTER"
+Account-Status,Int32,FALSE,Optional,2,Single field,account-status.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,N/A (calculated),"MEDIUM, HIGH, MASTER","MEDIUM, HIGH, MASTER","HIGH, MASTER"
+Acceptance-Term,Boolean,TRUE,Not NULL,,Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,TRUE,UNAUTHENTICATED,"LOW, MEDIUM, HIGH, MASTER",N/A (unchangeable),"HIGH, MASTER"
+Account-group,Int32,TRUE,Not NULL,None,Single field,account-group.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,UNAUTHENTICATED,"LOW, MEDIUM, HIGH, MASTER","MEDIUM, HIGH, MASTER","HIGH, MASTER"
+Organization,Object ID,TRUE,Not NULL,,Single field,,Strict,1NF,FALSE,Lookup,organization,,,FALSE,FALSE,TRUE,Search,TRUE,N/A (system),"LOW, MEDIUM, HIGH, MASTER",N/A (unchangeable),"HIGH, MASTER"
+CreatedAt,Date,TRUE,Not NULL,auto (mongoose timestamps),Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,N/A (unchangeable),"LOW, MEDIUM, HIGH, MASTER",N/A (unchangeable),"HIGH, MASTER"
+UpdatedAt,Date,FALSE,Optional,auto (mongoose timestamps),Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,N/A (system),"LOW, MEDIUM, HIGH, MASTER",N/A (system),"HIGH, MASTER"
+DeletedAt,Date,FALSE,Optional,,Single field,,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,Filter,FALSE,N/A (system),"MEDIUM, HIGH, MASTER",N/A (system),"HIGH, MASTER"
+CreatedBy,Object ID,TRUE,Not NULL,,Single field,,Strict,1NF,FALSE,Lookup,user-account,,,FALSE,FALSE,TRUE,Filter,TRUE,N/A (system),"MEDIUM, HIGH, MASTER",N/A (system),"HIGH, MASTER"
+UpdatedBy,Object ID,FALSE,Optional,,Single field,,Strict,1NF,FALSE,Lookup,user-account,,,FALSE,FALSE,FALSE,Filter,FALSE,N/A (system),"MEDIUM, HIGH, MASTER",N/A (system),"HIGH, MASTER"
+Privilege,Int32,TRUE,Not NULL,1,Single field,privilege.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,None,FALSE,N/A (system),"MEDIUM, HIGH, MASTER","HIGH, MASTER","HIGH, MASTER"
+Access-modifier,Int32,TRUE,Not NULL,3,Single field,access-modifier.enum.ts,Strict,1NF,FALSE,,,,,FALSE,FALSE,FALSE,None,FALSE,N/A (system),"MEDIUM, HIGH, MASTER","HIGH, MASTER","HIGH, MASTER"
+,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,
+Collection name,user-account,,,,,,,,,,,,,,,,,,,,,
+Business name,User-Account,,,,,,,,,,,,,,,,,,,,,
+Description,"The User-Account entity is used to store basic user data, which will allow the user to access their dashboard and manage their personal information.",,,,,,,,,,,,,,,,,,,,,
+Owner/Module,user-account,,,,,,,,,,,,,,,,,,,,,
+Primary use case,CRUD,,,,,,,,,,,,,,,,,,,,,
+Relationship summary,"A User Account connects to an organization in a relationship where an Organization can have ""n"" user accounts, but a user account can only have one organization.",,,,,,,,,,,,,,,,,,,,,
+Cardinality summary,N:1,,,,,,,,,,,,,,,,,,,,,
+Indexes,,,,,,,,,,,,,,,,,,,,,,
+Audit enable,Enabled,,,,,,,,,,,,,,,,,,,,,
+API level,Private,,,,,,,,,,,,,,,,,,,,,
+PII level,Sensitive,,,,,,,,,,,,,,,,,,,,,
+Relation policy,Cascade,,,,,,,,,,,,,,,,,,,,,
+Migration notes,,,,,,,,,,,,,,,,,,,,,,
